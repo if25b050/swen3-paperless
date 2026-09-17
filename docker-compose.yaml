@@ -1,0 +1,45 @@
+services:
+  db:
+    container_name: PaperlessDB
+    image: postgres:17.6
+    environment:
+      POSTGRES_USER: paperless
+      POSTGRES_PASSWORD: paperless
+      PGDATA: /data/postgres
+      POSTGRES_DB: paperless
+    volumes:
+      - db:/data/postgres
+      - ./init.sql:/docker-entrypoint-initdb.d/create_database.sql
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -d postgres" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+  backend:
+    depends_on:
+      - db
+    profiles:
+      - backend
+      - full
+    build:
+      context: paperless-rest
+      dockerfile: rest.Dockerfile
+    environment:
+      DATABASE_URL: "jdbc:postgresql://db:5432/paperless"
+    ports:
+      - "8080:8080"
+#  frontend:
+#    profiles:
+#      - frontend
+#      - full
+#    build:
+#      context: PaperlessFrontend
+#      dockerfile: frontend.Dockerfile
+#    ports:
+#      - "4200:8080"
+
+volumes:
+  db:
