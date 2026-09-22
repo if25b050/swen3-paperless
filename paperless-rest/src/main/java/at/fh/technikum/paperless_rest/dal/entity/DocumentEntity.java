@@ -3,33 +3,30 @@ package at.fh.technikum.paperless_rest.dal.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.util.List;
 
 @Entity
 @Getter
 @Setter
-@Table(name="documents")
+@ToString
+@Table(name = "documents")
 public class DocumentEntity {
     @Id
+    @Column
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(nullable=false)
+    @Column(nullable = false)
     private String name;
 
-    @ManyToMany(mappedBy = "documents")
+    @Column(nullable = false)
+    private String fileUrl;
+
+    @ManyToMany
     private List<LabelEntity> labels;
 
     public DocumentEntity() {
-    }
-
-    @Override
-    public String toString() {
-        return "DocumentEntity{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", labels=" + labels +
-                '}';
     }
 }
