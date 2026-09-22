@@ -1,5 +1,7 @@
 package at.fh.technikum.paperless_rest.presentation.controller;
 
+import at.fh.technikum.paperless_rest.business.mapper.DocumentMapper;
+import at.fh.technikum.paperless_rest.business.model.document.*;
 import at.fh.technikum.paperless_rest.business.services.DocumentService;
 import at.fh.technikum.paperless_rest.presentation.dto.request.DocumentCreateRequest;
 import at.fh.technikum.paperless_rest.presentation.dto.request.DocumentUpdateRequest;
@@ -14,44 +16,60 @@ import java.util.List;
 public class DocumentController {
 
     private final DocumentService documentService;
+    private final DocumentMapper documentMapper;
 
     @Autowired
-    public DocumentController(DocumentService documentService) {
+    public DocumentController(DocumentService documentService, DocumentMapper documentMapper) {
         this.documentService = documentService;
+        this.documentMapper = documentMapper;
     }
 
     @GetMapping(produces = "application/json")
     public List<DocumentResponse> getDocuments() {
-        return documentService.getAllDocuments();
+
+        List<DocumentModel> documentModels = documentService.getAllDocuments();
+        return documentModels.stream()
+                .map(documentMapper::toDocumentResponse)
+                .toList();
     }
 
     @GetMapping(path = "/{id}", produces = "application/json")
     public DocumentResponse getDocument(@PathVariable int id) {
-        return documentService.getDocumentById(id);
+        DocumentModel documentModel = documentService.getDocumentById(id);
+        return documentMapper.toDocumentResponse(documentModel);
     }
 
-    @GetMapping(path = "/{label}/documents", produces = "application/json")
-    public List<DocumentResponse> getDocumentsWithLabel(@PathVariable String label) {
-        return documentService.getDocumentsByLabel(label);
+    @GetMapping(path = "/{labelId}/documents", produces = "application/json")
+    public List<DocumentResponse> getDocumentsWithLabel(@PathVariable int labelId) {
+        List<DocumentModel> documentsModels = documentService.getDocumentsByLabel(labelId);
+        return documentsModels.stream()
+                .map(documentMapper::toDocumentResponse)
+                .toList();
     }
 
     @PostMapping(consumes = "application/json", produces = "application/json")
     public DocumentResponse createDocument(@RequestBody DocumentCreateRequest documentCreateRequest) {
-        return documentService.createDocument(documentCreateRequest);
+        DocumentCreateModel documentCreateModel = documentMapper.toDocumentCreateModel(documentCreateRequest);
+        DocumentModel documentModel = documentService.createDocument(documentCreateModel);
+        return documentMapper.toDocumentResponse(documentModel);
     }
 
     @PutMapping(path = "/{id}", consumes = "application/json", produces = "application/json")
     public DocumentResponse updateDocument(@PathVariable int id, @RequestBody DocumentUpdateRequest documentUpdateRequest) {
-        return documentService.updateDocument(id, documentUpdateRequest);
+        DocumentUpdateModel documentUpdateModel = documentMapper.toDocumentUpdateModel(id, documentUpdateRequest);
+        DocumentModel documentModel = documentService.updateDocument(documentUpdateModel);
+        return documentMapper.toDocumentResponse(documentModel);
     }
 
     @PutMapping(path = "/{id}/file", consumes = "application/octet-stream", produces = "application/json")
     public DocumentResponse updateDocumentFile(@PathVariable int id, @RequestBody byte[] file) {
-        return documentService.updateDocumentFile(id, file);
+        DocumentUpdateFileModel documentUpdateFileModel = documentMapper.toDocumentUpdateFileModel(id, file);
+        DocumentModel documentModel = documentService.updateDocumentFile(documentUpdateFileModel);
+        return documentMapper.toDocumentResponse(documentModel);
     }
 
     @DeleteMapping(path = "/{id}")
     public void deleteDocument(@PathVariable int id) {
-        documentService.deleteDocument(id);
+        documentService.deleteDocument(new DocumentDeleteModel(id));
     }
 }

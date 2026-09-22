@@ -1,6 +1,6 @@
 package at.fh.technikum.paperless_rest.presentation.dto.response;
 
-import at.fh.technikum.paperless_rest.business.model.LabelModel;
+import at.fh.technikum.paperless_rest.business.model.label.LabelModel;
 
 import java.util.List;
 
