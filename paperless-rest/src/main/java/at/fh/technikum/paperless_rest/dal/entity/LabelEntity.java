@@ -14,7 +14,7 @@ public class LabelEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(unique = true)
+    @Column(nullable = false, unique = true) // um doppelte Labels zu vermeiden
     private String name;
 
     @ManyToMany(mappedBy = "labels")

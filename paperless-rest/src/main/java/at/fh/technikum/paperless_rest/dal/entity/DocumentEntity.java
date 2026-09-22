@@ -9,15 +9,16 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
+@Table(name="documents")
 public class DocumentEntity {
     @Id
-    @Column
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    @Column
+
+    @Column(nullable=false)
     private String name;
 
-    @ManyToMany
+    @ManyToMany(mappedBy = "documents")
     private List<LabelEntity> labels;
 
     public DocumentEntity() {
