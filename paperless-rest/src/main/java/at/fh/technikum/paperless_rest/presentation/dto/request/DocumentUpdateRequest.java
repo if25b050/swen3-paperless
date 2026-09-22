@@ -1,4 +1,6 @@
 package at.fh.technikum.paperless_rest.presentation.dto.request;
 
-public record DocumentUpdateRequest() {
+import java.util.List;
+
+public record DocumentUpdateRequest(String name, List<String> labels) {
 }

@@ -1,4 +1,4 @@
-package at.fh.technikum.paperless_rest.DAL.entity;
+package at.fh.technikum.paperless_rest.dal.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -14,6 +14,7 @@ public class LabelEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @Column(unique = true)
     private String name;
 
     @ManyToMany(mappedBy = "labels")
