@@ -2,6 +2,7 @@ package at.fh.technikum.paperless_rest.business.services;
 
 import at.fh.technikum.paperless_rest.business.exceptions.ObjectNotFoundException;
 import at.fh.technikum.paperless_rest.business.mapper.LabelMapper;
+import at.fh.technikum.paperless_rest.business.model.ValidationModel;
 import at.fh.technikum.paperless_rest.business.model.label.LabelCreateModel;
 import at.fh.technikum.paperless_rest.business.model.label.LabelDeleteModel;
 import at.fh.technikum.paperless_rest.business.model.label.LabelModel;
@@ -34,6 +35,7 @@ public class LabelService {
     }
 
     public LabelModel createLabel(LabelCreateModel labelCreateModel) {
+        ValidationModel.validate(labelCreateModel);
 
         LabelEntity entity = labelMapper.toEntity(labelCreateModel);
         entity = labelRepository.save(entity);
@@ -42,6 +44,8 @@ public class LabelService {
     }
 
     public LabelModel updateLabel(LabelUpdateModel labelUpdateModel) {
+        ValidationModel.validate(labelUpdateModel);
+
         LabelEntity labelEntity = labelRepository.findById(labelUpdateModel.id())
                 .orElseThrow(() -> new ObjectNotFoundException("Label with id: " + labelUpdateModel.id() + " not found"));
 
@@ -54,6 +58,8 @@ public class LabelService {
 
 
     public void deleteLabel(LabelDeleteModel labelDeleteModel) {
+        ValidationModel.validate(labelDeleteModel);
+
         labelRepository.deleteById(labelDeleteModel.id());
     }
 }

@@ -3,6 +3,7 @@ package at.fh.technikum.paperless_rest.business.services;
 import at.fh.technikum.paperless_rest.business.exceptions.ObjectNotFoundException;
 import at.fh.technikum.paperless_rest.business.integrations.FileIntegration;
 import at.fh.technikum.paperless_rest.business.mapper.DocumentMapper;
+import at.fh.technikum.paperless_rest.business.model.ValidationModel;
 import at.fh.technikum.paperless_rest.business.model.document.*;
 import at.fh.technikum.paperless_rest.dal.entity.DocumentEntity;
 import at.fh.technikum.paperless_rest.dal.entity.LabelEntity;
@@ -44,6 +45,8 @@ public class DocumentService {
 
     @Transactional
     public DocumentModel updateDocument(DocumentUpdateModel documentUpdateModel) {
+        ValidationModel.validate(documentUpdateModel);
+
         DocumentEntity documentEntity = documentRepository.findById(documentUpdateModel.id())
                 .orElseThrow(() -> new ObjectNotFoundException("Document with id: " + documentUpdateModel.id() + " not found"));
 
@@ -67,11 +70,15 @@ public class DocumentService {
 
     @Transactional
     public void deleteDocument(DocumentDeleteModel documentDeleteModel) {
+        ValidationModel.validate(documentDeleteModel);
+
         documentRepository.deleteById(documentDeleteModel.id());
     }
 
     @Transactional
     public DocumentModel createDocument(DocumentCreateModel documentCreateModel) {
+        ValidationModel.validate(documentCreateModel);
+
         String fileUrl = fileIntegration.saveFile(documentCreateModel.file());
         DocumentEntity documentEntity = documentMapper.toDocumentEntity(documentCreateModel, fileUrl);
 
@@ -82,6 +89,8 @@ public class DocumentService {
 
     @Transactional
     public DocumentModel updateDocumentFile(DocumentUpdateFileModel documentUpdateFileModel) {
+        ValidationModel.validate(documentUpdateFileModel);
+
         DocumentEntity documentEntity = documentRepository.findById(documentUpdateFileModel.id())
                 .orElseThrow(() -> new ObjectNotFoundException("Document with id: " + documentUpdateFileModel.id() + " not found"));
 
