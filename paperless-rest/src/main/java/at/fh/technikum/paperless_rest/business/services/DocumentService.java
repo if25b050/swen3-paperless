@@ -3,10 +3,7 @@ package at.fh.technikum.paperless_rest.business.services;
 import at.fh.technikum.paperless_rest.business.exceptions.ObjectNotFoundException;
 import at.fh.technikum.paperless_rest.business.integrations.FileIntegration;
 import at.fh.technikum.paperless_rest.business.mapper.DocumentMapper;
-import at.fh.technikum.paperless_rest.business.model.DocumentCreateModel;
-import at.fh.technikum.paperless_rest.business.model.DocumentModel;
-import at.fh.technikum.paperless_rest.business.model.DocumentUpdateFileModel;
-import at.fh.technikum.paperless_rest.business.model.DocumentUpdateModel;
+import at.fh.technikum.paperless_rest.business.model.document.*;
 import at.fh.technikum.paperless_rest.dal.entity.DocumentEntity;
 import at.fh.technikum.paperless_rest.dal.entity.LabelEntity;
 import at.fh.technikum.paperless_rest.dal.repository.DocumentRepository;
@@ -33,10 +30,9 @@ public class DocumentService {
     }
 
     public DocumentModel getDocumentById(int id) {
-        DocumentEntity documentEntity = documentRepository.findById(id).orElse(null);
-        if (documentEntity == null) {
-            throw new ObjectNotFoundException("Document with id: " + id + " not found");
-        }
+        DocumentEntity documentEntity = documentRepository.findById(id)
+                .orElseThrow(() -> new ObjectNotFoundException("Document with id: " + id + " not found"));
+
         return documentMapper.toDocumentModel(documentEntity);
     }
 
@@ -48,10 +44,8 @@ public class DocumentService {
 
     @Transactional
     public DocumentModel updateDocument(DocumentUpdateModel documentUpdateModel) {
-        DocumentEntity documentEntity = documentRepository.findById(documentUpdateModel.id()).orElse(null);
-        if (documentEntity == null) {
-            throw new ObjectNotFoundException("Document with id: " + documentUpdateModel.id() + " not found");
-        }
+        DocumentEntity documentEntity = documentRepository.findById(documentUpdateModel.id())
+                .orElseThrow(() -> new ObjectNotFoundException("Document with id: " + documentUpdateModel.id() + " not found"));
 
         documentEntity.setName(documentUpdateModel.name());
 
@@ -72,8 +66,8 @@ public class DocumentService {
     }
 
     @Transactional
-    public void deleteDocument(int id) {
-        documentRepository.deleteById(id);
+    public void deleteDocument(DocumentDeleteModel documentDeleteModel) {
+        documentRepository.deleteById(documentDeleteModel.id());
     }
 
     @Transactional
@@ -88,10 +82,9 @@ public class DocumentService {
 
     @Transactional
     public DocumentModel updateDocumentFile(DocumentUpdateFileModel documentUpdateFileModel) {
-        DocumentEntity documentEntity = documentRepository.findById(documentUpdateFileModel.id()).orElse(null);
-        if (documentEntity == null) {
-            throw new ObjectNotFoundException("Document with id: " + documentUpdateFileModel.id() + " not found");
-        }
+        DocumentEntity documentEntity = documentRepository.findById(documentUpdateFileModel.id())
+                .orElseThrow(() -> new ObjectNotFoundException("Document with id: " + documentUpdateFileModel.id() + " not found"));
+
         fileIntegration.deleteFile(documentEntity.getFileUrl());
 
         String fileUrl = fileIntegration.saveFile(documentUpdateFileModel.file());

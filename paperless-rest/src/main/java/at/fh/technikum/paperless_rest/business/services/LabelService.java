@@ -1,30 +1,59 @@
 package at.fh.technikum.paperless_rest.business.services;
 
-import at.fh.technikum.paperless_rest.presentation.dto.response.LabelResponse;
+import at.fh.technikum.paperless_rest.business.exceptions.ObjectNotFoundException;
+import at.fh.technikum.paperless_rest.business.mapper.LabelMapper;
+import at.fh.technikum.paperless_rest.business.model.label.LabelCreateModel;
+import at.fh.technikum.paperless_rest.business.model.label.LabelDeleteModel;
+import at.fh.technikum.paperless_rest.business.model.label.LabelModel;
+import at.fh.technikum.paperless_rest.business.model.label.LabelUpdateModel;
+import at.fh.technikum.paperless_rest.dal.entity.LabelEntity;
+import at.fh.technikum.paperless_rest.dal.repository.LabelRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 public class LabelService {
-    public List<LabelResponse> getAllLabels() {
-        return null;
+
+    @Autowired
+    private LabelRepository labelRepository;
+    @Autowired
+    private LabelMapper labelMapper;
+
+    public List<LabelModel> getAllLabels() {
+        List<LabelEntity> labels = labelRepository.findAll();
+        return labels.stream().map(labelMapper::toModel).toList();
     }
 
-    public LabelResponse getLabelById(int id) {
-        return null;
+    public LabelModel getLabelById(int id) {
+        LabelEntity labelEntity = labelRepository.findById(id)
+                .orElseThrow(() -> new ObjectNotFoundException("Label with id: " + id + " not found"));
+
+        return labelMapper.toModel(labelEntity);
     }
 
-    public LabelResponse createLabel(String newLabelName) {
-        return null;
+    public LabelModel createLabel(LabelCreateModel labelCreateModel) {
+
+        LabelEntity entity = labelMapper.toEntity(labelCreateModel);
+        entity = labelRepository.save(entity);
+
+        return labelMapper.toModel(entity);
     }
 
-    public LabelResponse updateLabel(int id, String newLabelName) {
-        return null;
+    public LabelModel updateLabel(LabelUpdateModel labelUpdateModel) {
+        LabelEntity labelEntity = labelRepository.findById(labelUpdateModel.id())
+                .orElseThrow(() -> new ObjectNotFoundException("Label with id: " + labelUpdateModel.id() + " not found"));
+
+        labelEntity.setName(labelUpdateModel.name());
+
+        labelEntity = labelRepository.save(labelEntity);
+
+        return labelMapper.toModel(labelEntity);
     }
 
 
-    public void deleteLabel(int id) {
-
+    public void deleteLabel(LabelDeleteModel labelDeleteModel) {
+        labelRepository.deleteById(labelDeleteModel.id());
     }
 }

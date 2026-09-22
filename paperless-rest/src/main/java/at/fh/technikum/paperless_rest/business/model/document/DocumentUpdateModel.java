@@ -1,4 +1,4 @@
-package at.fh.technikum.paperless_rest.business.model;
+package at.fh.technikum.paperless_rest.business.model.document;
 
 import java.util.List;
 
