@@ -29,7 +29,7 @@ public class LabelService {
 
     public LabelModel getLabelById(int id) {
         LabelEntity labelEntity = labelRepository.findById(id)
-                .orElseThrow(() -> new ObjectNotFoundException("Label with id: " + id + " not found"));
+                .orElseThrow(() -> new ObjectNotFoundException("Label with id: " + id + " not found."));
 
         return labelMapper.toModel(labelEntity);
     }
@@ -47,7 +47,7 @@ public class LabelService {
         ValidationModel.validate(labelUpdateModel);
 
         LabelEntity labelEntity = labelRepository.findById(labelUpdateModel.id())
-                .orElseThrow(() -> new ObjectNotFoundException("Label with id: " + labelUpdateModel.id() + " not found"));
+                .orElseThrow(() -> new ObjectNotFoundException("Label with id: " + labelUpdateModel.id() + " not found."));
 
         labelEntity.setName(labelUpdateModel.name());
 

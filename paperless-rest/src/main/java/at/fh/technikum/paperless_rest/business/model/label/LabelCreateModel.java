@@ -6,7 +6,7 @@ public record LabelCreateModel(String name) implements ValidationModel {
     @Override
     public String validationLogic() {
         if (name == null || name.isBlank()) {
-            return "Name is required";
+            return "Name is required.";
         }
         return "";
     }

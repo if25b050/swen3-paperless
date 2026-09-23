@@ -11,13 +11,13 @@ public record DocumentModel(int id, String name, List<LabelModel> labels,
     @Override
     public String validationLogic() {
         if (fileUrl == null || fileUrl.isBlank()) {
-            return "File-URL is required";
+            return "File-URL is required.";
         }
         if (name == null || name.isBlank()) {
-            return "Name is required";
+            return "Name is required.";
         }
         if (id <= 0) {
-            return "ID should be greater than 0";
+            return "ID should be greater than 0.";
         }
         return "";
     }

@@ -6,10 +6,10 @@ public record DocumentCreateModel(String name, byte[] file) implements Validatio
     @Override
     public String validationLogic() {
         if (name == null || name.isBlank()) {
-            return "Name is required";
+            return "Name is required.";
         }
         if (file == null || file.length == 0) {
-            return "File is required";
+            return "File is required.";
         }
         return "";
     }
