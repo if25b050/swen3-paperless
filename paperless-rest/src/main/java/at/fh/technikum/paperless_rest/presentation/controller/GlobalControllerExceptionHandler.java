@@ -17,8 +17,7 @@ public class GlobalControllerExceptionHandler {
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ProblemDetail handleConflict(DataIntegrityViolationException ex) {
         log.error(ex.getMessage(), ex);
-        // TODO more specific Message?
-        return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.getMessage());
+        return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, "There was a conflict when inserting.");
     }
 
     @ExceptionHandler(ModelValidationFailedException.class)

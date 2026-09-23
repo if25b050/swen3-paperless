@@ -17,6 +17,7 @@ public class DocumentEntity {
     @Id
     @Column
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    // TODO Umbauen auf UUID?
     private Integer id;
 
     @Column(nullable = false)
