@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -25,7 +26,7 @@ public class DocumentEntity {
     private String fileUrl;
 
     @ManyToMany
-    private List<LabelEntity> labels;
+    private List<LabelEntity> labels = new ArrayList<>();
 
     public DocumentEntity() {
     }

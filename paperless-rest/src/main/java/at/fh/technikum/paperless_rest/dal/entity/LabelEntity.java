@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -21,5 +22,5 @@ public class LabelEntity {
     private String name;
 
     @ManyToMany(mappedBy = "labels")
-    private List<DocumentEntity> documents;
+    private List<DocumentEntity> documents = new ArrayList<>();
 }
