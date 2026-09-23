@@ -3,7 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/at.fh.technikum.swen3-paperless.main.iml" filepath="$PROJECT_DIR$/.idea/modules/at.fh.technikum.swen3-paperless.main.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/at.fh.technikum.swen3-paperless.test.iml" filepath="$PROJECT_DIR$/.idea/modules/at.fh.technikum.swen3-paperless.test.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/swen3-paperless.iml" filepath="$PROJECT_DIR$/.idea/swen3-paperless.iml" />
     </modules>
   </component>
