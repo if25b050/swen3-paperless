@@ -6,10 +6,10 @@ public record DocumentUpdateFileModel(int id, byte[] file) implements Validation
     @Override
     public String validationLogic() {
         if (id <= 0) {
-            return "ID should be greater than 0";
+            return "ID should be greater than 0.";
         }
         if (file == null || file.length == 0) {
-            return "File is required";
+            return "File is required.";
         }
         return "";
     }

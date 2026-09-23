@@ -32,7 +32,7 @@ public class DocumentService {
 
     public DocumentModel getDocumentById(int id) {
         DocumentEntity documentEntity = documentRepository.findById(id)
-                .orElseThrow(() -> new ObjectNotFoundException("Document with id: " + id + " not found"));
+                .orElseThrow(() -> new ObjectNotFoundException("Document with id: " + id + " not found."));
 
         return documentMapper.toDocumentModel(documentEntity);
     }
@@ -48,7 +48,7 @@ public class DocumentService {
         ValidationModel.validate(documentUpdateModel);
 
         DocumentEntity documentEntity = documentRepository.findById(documentUpdateModel.id())
-                .orElseThrow(() -> new ObjectNotFoundException("Document with id: " + documentUpdateModel.id() + " not found"));
+                .orElseThrow(() -> new ObjectNotFoundException("Document with id: " + documentUpdateModel.id() + " not found."));
 
         documentEntity.setName(documentUpdateModel.name());
 
@@ -92,7 +92,7 @@ public class DocumentService {
         ValidationModel.validate(documentUpdateFileModel);
 
         DocumentEntity documentEntity = documentRepository.findById(documentUpdateFileModel.id())
-                .orElseThrow(() -> new ObjectNotFoundException("Document with id: " + documentUpdateFileModel.id() + " not found"));
+                .orElseThrow(() -> new ObjectNotFoundException("Document with id: " + documentUpdateFileModel.id() + " not found."));
 
         fileIntegration.deleteFile(documentEntity.getFileUrl());
 

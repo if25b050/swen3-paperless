@@ -8,10 +8,10 @@ public record DocumentUpdateModel(int id, String name, List<String> labels) impl
     @Override
     public String validationLogic() {
         if (name == null || name.isBlank()) {
-            return "Name is required";
+            return "Name is required.";
         }
         if (id <= 0) {
-            return "ID should be greater than 0";
+            return "ID should be greater than 0.";
         }
         return "";
     }
