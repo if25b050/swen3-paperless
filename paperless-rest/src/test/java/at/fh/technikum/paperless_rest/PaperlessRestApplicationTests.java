@@ -1,9 +1,13 @@
 package at.fh.technikum.paperless_rest;
 
 import at.fh.technikum.paperless_rest.business.model.document.DocumentCreateModel;
+import at.fh.technikum.paperless_rest.dal.repository.DocumentRepository;
+import at.fh.technikum.paperless_rest.dal.repository.LabelRepository;
 import at.fh.technikum.paperless_rest.presentation.dto.request.DocumentUpdateRequest;
 import at.fh.technikum.paperless_rest.presentation.dto.response.DocumentResponse;
 import at.fh.technikum.paperless_rest.presentation.dto.response.LabelResponse;
+import jakarta.transaction.Transactional;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -29,9 +33,23 @@ class PaperlessRestApplicationTests {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @Autowired
+    private DocumentRepository documentRepository;
+    @Autowired
+    private LabelRepository labelRepository;
+
     @Test
     void contextLoads() {
         // This just tests if the Application can start
+    }
+
+    @Transactional
+    @BeforeEach
+    void setup() {
+        documentRepository.deleteAllInBatch();
+        documentRepository.flush();
+        labelRepository.deleteAllInBatch();
+        labelRepository.flush();
     }
 
     @Test
@@ -84,10 +102,7 @@ class PaperlessRestApplicationTests {
         mvc.perform(get("/api/documents"))
                 .andExpect(status().isOk())
                 .andExpect(content().string("[]"));
-
-        //  TODO Clean DB
     }
-
 
     @Test
     public void labelControllerTest() throws Exception {
@@ -146,14 +161,13 @@ class PaperlessRestApplicationTests {
                 .andExpect(content().string(not("[]")));
 
         // Test delete label
-        mvc.perform(delete("/api/documents/{0}", labelCreateResponse.id()))
+        mvc.perform(delete("/api/documents/{0}", testDocument.id()))
                 .andExpect(status().isOk());
 
         // Test if documents can not be found by removed label
         mvc.perform(get("/api/labels/{0}/documents", labelCreateResponse.id()))
                 .andExpect(status().isOk())
                 .andExpect(content().string("[]"));
-        //  TODO Clean DB
     }
 
     private DocumentResponse createTestDocument() throws Exception {
