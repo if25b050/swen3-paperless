@@ -4,8 +4,9 @@ import at.fh.technikum.paperless_rest.business.model.ValidationModel;
 import at.fh.technikum.paperless_rest.business.model.label.LabelModel;
 
 import java.util.List;
+import java.util.UUID;
 
-public record DocumentModel(int id, String name, List<LabelModel> labels,
+public record DocumentModel(UUID uuid, String name, List<LabelModel> labels,
                             String fileUrl) implements ValidationModel {
 
     @Override
@@ -16,8 +17,8 @@ public record DocumentModel(int id, String name, List<LabelModel> labels,
         if (name == null || name.isBlank()) {
             return "Name is required.";
         }
-        if (id <= 0) {
-            return "ID should be greater than 0.";
+        if (uuid == null || uuid.toString().isBlank()) {
+            return "UUID is required.";
         }
         return "";
     }

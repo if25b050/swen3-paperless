@@ -1,15 +1,16 @@
 package at.fh.technikum.paperless_rest.api.controller;
 
+import at.fh.technikum.paperless_rest.api.dto.request.DocumentUpdateRequest;
+import at.fh.technikum.paperless_rest.api.dto.response.DocumentResponse;
 import at.fh.technikum.paperless_rest.business.mapper.DocumentMapper;
 import at.fh.technikum.paperless_rest.business.model.document.*;
 import at.fh.technikum.paperless_rest.business.service.DocumentService;
-import at.fh.technikum.paperless_rest.api.dto.request.DocumentUpdateRequest;
-import at.fh.technikum.paperless_rest.api.dto.response.DocumentResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/documents")
@@ -33,9 +34,9 @@ public class DocumentController {
                 .toList();
     }
 
-    @GetMapping(path = "/{id}", produces = "application/json")
-    public DocumentResponse getDocument(@PathVariable int id) {
-        DocumentModel documentModel = documentService.getDocumentById(id);
+    @GetMapping(path = "/{uuid}", produces = "application/json")
+    public DocumentResponse getDocument(@PathVariable String uuid) {
+        DocumentModel documentModel = documentService.getDocumentById(uuid);
         return documentMapper.toDocumentResponse(documentModel);
     }
 
@@ -46,22 +47,22 @@ public class DocumentController {
         return documentMapper.toDocumentResponse(documentModel);
     }
 
-    @PutMapping(path = "/{id}", consumes = "application/json", produces = "application/json")
-    public DocumentResponse updateDocument(@PathVariable int id, @RequestBody DocumentUpdateRequest documentUpdateRequest) {
-        DocumentUpdateModel documentUpdateModel = documentMapper.toDocumentUpdateModel(id, documentUpdateRequest);
+    @PutMapping(path = "/{uuid}", consumes = "application/json", produces = "application/json")
+    public DocumentResponse updateDocument(@PathVariable String uuid, @RequestBody DocumentUpdateRequest documentUpdateRequest) {
+        DocumentUpdateModel documentUpdateModel = documentMapper.toDocumentUpdateModel(uuid, documentUpdateRequest);
         DocumentModel documentModel = documentService.updateDocument(documentUpdateModel);
         return documentMapper.toDocumentResponse(documentModel);
     }
 
-    @PostMapping(path = "/{id}/file", produces = "application/json")
-    public DocumentResponse updateDocumentFile(@PathVariable int id, @RequestParam("file") MultipartFile file) {
-        DocumentUpdateFileModel documentUpdateFileModel = documentMapper.toDocumentUpdateFileModel(id, file);
+    @PostMapping(path = "/{uuid}/file", produces = "application/json")
+    public DocumentResponse updateDocumentFile(@PathVariable String uuid, @RequestParam("file") MultipartFile file) {
+        DocumentUpdateFileModel documentUpdateFileModel = documentMapper.toDocumentUpdateFileModel(uuid, file);
         DocumentModel documentModel = documentService.updateDocumentFile(documentUpdateFileModel);
         return documentMapper.toDocumentResponse(documentModel);
     }
 
-    @DeleteMapping(path = "/{id}")
-    public void deleteDocument(@PathVariable int id) {
-        documentService.deleteDocument(new DocumentDeleteModel(id));
+    @DeleteMapping(path = "/{uuid}")
+    public void deleteDocument(@PathVariable UUID uuid) {
+        documentService.deleteDocument(new DocumentDeleteModel(uuid));
     }
 }

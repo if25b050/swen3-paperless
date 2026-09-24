@@ -2,35 +2,33 @@ package at.fh.technikum.paperless_rest.business.model.label;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
+
+import java.util.UUID;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 class LabelDeleteModelTest {
-    @ParameterizedTest
-    @ValueSource(ints = {0, Integer.MIN_VALUE, -67})
-    @DisplayName("Return ID should be greater than 0")
-    void idLowerOrEqualToZero(int id) {
+    @Test
+    @DisplayName("Return UUID is required")
+    void uuidIsRequiredNull() {
         // Given
-        LabelDeleteModel labelDeleteModel = new LabelDeleteModel(id);
+        LabelDeleteModel labelDeleteModel = new LabelDeleteModel(null);
 
         // When
         String validationResult = labelDeleteModel.validationLogic();
 
         //Then
-        assertThat(validationResult).isEqualTo("ID should be greater than 0.");
+        assertThat(validationResult).isEqualTo("UUID is required.");
     }
 
     @Test
     @DisplayName("Return empty string when ID is valid")
     void idIsValid() {
         // Given
-        LabelDeleteModel labelDeleteModel = new LabelDeleteModel(67);
+        LabelDeleteModel labelDeleteModel = new LabelDeleteModel(UUID.randomUUID());
 
         // When
-        String  validationResult = labelDeleteModel.validationLogic();
+        String validationResult = labelDeleteModel.validationLogic();
 
         //Then
         assertThat(validationResult).isEqualTo("");

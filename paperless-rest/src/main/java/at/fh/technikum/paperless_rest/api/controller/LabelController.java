@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/labels")
@@ -39,15 +40,15 @@ public class LabelController {
         return allLabels.stream().map(labelMapper::toResponse).toList();
     }
 
-    @GetMapping(path = "/{id}", produces = "application/json")
-    public LabelResponse getLabel(@PathVariable int id) {
-        LabelModel label = labelService.getLabelById(id);
+    @GetMapping(path = "/{uuid}", produces = "application/json")
+    public LabelResponse getLabel(@PathVariable String uuid) {
+        LabelModel label = labelService.getLabelById(uuid);
         return labelMapper.toResponse(label);
     }
 
-    @GetMapping(path = "/{id}/documents", produces = "application/json")
-    public List<DocumentResponse> getDocumentsWithLabel(@PathVariable int id) {
-        List<DocumentModel> documentsModels = documentService.getDocumentsByLabel(id);
+    @GetMapping(path = "/{uuid}/documents", produces = "application/json")
+    public List<DocumentResponse> getDocumentsWithLabel(@PathVariable String uuid) {
+        List<DocumentModel> documentsModels = documentService.getDocumentsByLabel(uuid);
         return documentsModels.stream()
                 .map(documentMapper::toDocumentResponse)
                 .toList();
@@ -59,14 +60,14 @@ public class LabelController {
         return labelMapper.toResponse(label);
     }
 
-    @PutMapping(path = "/{id}", consumes = "text/plain", produces = "application/json")
-    public LabelResponse updateLabel(@PathVariable int id, @RequestBody String newLabelName) {
-        LabelModel label = labelService.updateLabel(new LabelUpdateModel(id, newLabelName));
+    @PutMapping(path = "/{uuid}", consumes = "text/plain", produces = "application/json")
+    public LabelResponse updateLabel(@PathVariable UUID uuid, @RequestBody String newLabelName) {
+        LabelModel label = labelService.updateLabel(new LabelUpdateModel(uuid, newLabelName));
         return labelMapper.toResponse(label);
     }
 
-    @DeleteMapping(path = "/{id}")
-    public void deleteLabel(@PathVariable int id) {
-        labelService.deleteLabel(new LabelDeleteModel(id));
+    @DeleteMapping(path = "/{uuid}")
+    public void deleteLabel(@PathVariable UUID uuid) {
+        labelService.deleteLabel(new LabelDeleteModel(uuid));
     }
 }

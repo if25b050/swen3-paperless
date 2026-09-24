@@ -1,5 +1,6 @@
 package at.fh.technikum.paperless_rest.api.controller;
 
+import at.fh.technikum.paperless_rest.business.exception.InvalidUUIDException;
 import at.fh.technikum.paperless_rest.business.exception.ModelValidationFailedException;
 import at.fh.technikum.paperless_rest.business.exception.ObjectNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,6 +23,12 @@ public class GlobalControllerExceptionHandler {
 
     @ExceptionHandler(ModelValidationFailedException.class)
     public ProblemDetail handleValidationFailed(ModelValidationFailedException ex) {
+        log.warn(ex.getMessage(), ex);
+        return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
+    @ExceptionHandler(InvalidUUIDException.class)
+    public ProblemDetail handleInvalidUUID(ObjectNotFoundException ex) {
         log.warn(ex.getMessage(), ex);
         return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
     }

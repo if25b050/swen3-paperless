@@ -5,22 +5,22 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import java.util.UUID;
+
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 class LabelUpdateModelTest {
-    @ParameterizedTest
-    @ValueSource(ints = {Integer.MIN_VALUE, 0, -69})
-    @DisplayName("Return  ID should be greater than 0")
-    void idIsLowerThanZero(Integer id) {
+    @Test
+    @DisplayName("Return UUID is required")
+    void uuidIsRequiredNull() {
         // Given
-        LabelUpdateModel model = new LabelUpdateModel(id, "Hildegard");
+        LabelUpdateModel model = new LabelUpdateModel(null, "Hildegard");
 
         // When
         String validationResult = model.validationLogic();
 
         //Then
-        assertThat(validationResult).isEqualTo("ID should be greater than 0.");
+        assertThat(validationResult).isEqualTo("UUID is required.");
     }
 
     @ParameterizedTest
@@ -28,7 +28,7 @@ class LabelUpdateModelTest {
     @DisplayName("Return Name is required when blank")
     void nameIsBlank(String name) {
         // Given
-        LabelUpdateModel model = new LabelUpdateModel(67, name);
+        LabelUpdateModel model = new LabelUpdateModel(UUID.randomUUID(), name);
 
         // When
         String validationResult = model.validationLogic();
@@ -41,10 +41,10 @@ class LabelUpdateModelTest {
     @DisplayName("Return Name is required when null")
     void nameIsNull() {
         // Given
-        LabelUpdateModel model = new LabelUpdateModel(67, null);
+        LabelUpdateModel model = new LabelUpdateModel(UUID.randomUUID(), null);
 
         // When
-        String  validationResult = model.validationLogic();
+        String validationResult = model.validationLogic();
 
         //Then
         assertThat(validationResult).isEqualTo("Name is required.");
@@ -54,10 +54,10 @@ class LabelUpdateModelTest {
     @DisplayName("Return empty string when everything is valid")
     void everythingIsValid() {
         // Given
-        LabelUpdateModel model = new LabelUpdateModel(67, "Horst");
+        LabelUpdateModel model = new LabelUpdateModel(UUID.randomUUID(), "Horst");
 
         // When
-        String  validationResult = model.validationLogic();
+        String validationResult = model.validationLogic();
 
         //Then
         assertThat(validationResult).isEqualTo("");
