@@ -57,7 +57,7 @@ class PaperlessRestApplicationTests {
         DocumentResponse createResponse = createTestDocument();
 
         // Check if get returns the same as create
-        mvc.perform(get("/api/documents/{0}", createResponse.id()))
+        mvc.perform(get("/api/v1/documents/{0}", createResponse.id()))
                 .andExpect(status().isOk())
                 .andExpectAll(
                         jsonPath("$.name").value(createResponse.name()),
@@ -68,7 +68,7 @@ class PaperlessRestApplicationTests {
         // TODO Test file content
 
         // Test that there are documents in the list-api
-        mvc.perform(get("/api/documents"))
+        mvc.perform(get("/api/v1/documents"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(not("[]")));
 
@@ -78,7 +78,7 @@ class PaperlessRestApplicationTests {
         updateDocumentWithLabels(createResponse.id(), "Test File 2", label1, label2);
 
         // Test update file
-        mvc.perform(multipart("/api/documents/{0}/file", createResponse.id())
+        mvc.perform(multipart("/api/v1/documents/{0}/file", createResponse.id())
                         .file("file", "This is new File Content!".getBytes(StandardCharsets.UTF_8)))
                 .andExpect(status().isOk())
                 .andExpect(
@@ -86,7 +86,7 @@ class PaperlessRestApplicationTests {
                 );
 
         // Test invalid file upload
-        mvc.perform(multipart("/api/documents/{0}/file", createResponse.id())
+        mvc.perform(multipart("/api/v1/documents/{0}/file", createResponse.id())
                         .file("file", "".getBytes(StandardCharsets.UTF_8)))
                 .andExpect(status().isBadRequest())
                 .andExpect(
@@ -95,11 +95,11 @@ class PaperlessRestApplicationTests {
         // TODO Test file content after update
 
         // Test delete file
-        mvc.perform(delete("/api/documents/{0}", createResponse.id()))
+        mvc.perform(delete("/api/v1/documents/{0}", createResponse.id()))
                 .andExpect(status().isOk());
 
         // Test that there are no documents
-        mvc.perform(get("/api/documents"))
+        mvc.perform(get("/api/v1/documents"))
                 .andExpect(status().isOk())
                 .andExpect(content().string("[]"));
     }
@@ -110,13 +110,13 @@ class PaperlessRestApplicationTests {
         DocumentResponse testDocument = createTestDocument();
 
         // Test empty get labels
-        mvc.perform(get("/api/labels"))
+        mvc.perform(get("/api/v1/labels"))
                 .andExpect(status().isOk())
                 .andExpect(content().string("[]"));
 
         // Test label create
         String testCustomLabel = "Test Custom Label";
-        MvcResult createMvcResult = mvc.perform(post("/api/labels")
+        MvcResult createMvcResult = mvc.perform(post("/api/v1/labels")
                         .contentType(MediaType.TEXT_PLAIN)
                         .content(testCustomLabel))
                 .andExpect(status().isOk())
@@ -129,7 +129,7 @@ class PaperlessRestApplicationTests {
         LabelResponse labelCreateResponse = objectMapper.readValue(createMvcResult.getResponse().getContentAsString(), LabelResponse.class);
 
         // Test that there are labels in the list-api
-        mvc.perform(get("/api/labels"))
+        mvc.perform(get("/api/v1/labels"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(not("[]")));
 
@@ -138,7 +138,7 @@ class PaperlessRestApplicationTests {
 
         // Test label update
         String newTestCustomLabel = "New Test Custom Label";
-        mvc.perform(put("/api/labels/{0}", labelCreateResponse.id())
+        mvc.perform(put("/api/v1/labels/{0}", labelCreateResponse.id())
                         .contentType(MediaType.TEXT_PLAIN)
                         .content(newTestCustomLabel))
                 .andExpect(status().isOk())
@@ -147,7 +147,7 @@ class PaperlessRestApplicationTests {
                 );
 
         // Test label create fail (unique)
-        mvc.perform(post("/api/labels")
+        mvc.perform(post("/api/v1/labels")
                         .contentType(MediaType.TEXT_PLAIN)
                         .content(newTestCustomLabel))
                 .andExpect(status().isConflict())
@@ -156,16 +156,16 @@ class PaperlessRestApplicationTests {
                 );
 
         // Test find documents with label
-        mvc.perform(get("/api/labels/{0}/documents", labelCreateResponse.id()))
+        mvc.perform(get("/api/v1/labels/{0}/documents", labelCreateResponse.id()))
                 .andExpect(status().isOk())
                 .andExpect(content().string(not("[]")));
 
         // Test delete label
-        mvc.perform(delete("/api/documents/{0}", testDocument.id()))
+        mvc.perform(delete("/api/v1/documents/{0}", testDocument.id()))
                 .andExpect(status().isOk());
 
         // Test if documents can not be found by removed label
-        mvc.perform(get("/api/labels/{0}/documents", labelCreateResponse.id()))
+        mvc.perform(get("/api/v1/labels/{0}/documents", labelCreateResponse.id()))
                 .andExpect(status().isOk())
                 .andExpect(content().string("[]"));
     }
@@ -177,7 +177,7 @@ class PaperlessRestApplicationTests {
                 MediaType.TEXT_PLAIN_VALUE, documentCreateModel.file());
 
         // Test document creation
-        MvcResult createMvcResult = mvc.perform(multipart("/api/documents")
+        MvcResult createMvcResult = mvc.perform(multipart("/api/v1/documents")
                         .file(file))
                 .andExpect(status().isOk())
                 .andExpectAll(
@@ -194,7 +194,7 @@ class PaperlessRestApplicationTests {
     private void updateDocumentWithLabels(int id, String newFileName, String... labels) throws Exception {
         DocumentUpdateRequest documentUpdateRequest = new DocumentUpdateRequest(newFileName, Arrays.asList(labels));
 
-        mvc.perform(put("/api/documents/{0}", id)
+        mvc.perform(put("/api/v1/documents/{0}", id)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(documentUpdateRequest)))
                 .andExpect(status().isOk())
