@@ -5,9 +5,9 @@ import at.fh.technikum.paperless_rest.business.model.document.DocumentModel;
 import at.fh.technikum.paperless_rest.business.model.document.DocumentUpdateFileModel;
 import at.fh.technikum.paperless_rest.business.model.document.DocumentUpdateModel;
 import at.fh.technikum.paperless_rest.dal.entity.DocumentEntity;
-import at.fh.technikum.paperless_rest.presentation.dto.request.DocumentCreateRequest;
-import at.fh.technikum.paperless_rest.presentation.dto.request.DocumentUpdateRequest;
-import at.fh.technikum.paperless_rest.presentation.dto.response.DocumentResponse;
+import at.fh.technikum.paperless_rest.api.dto.request.DocumentCreateRequest;
+import at.fh.technikum.paperless_rest.api.dto.request.DocumentUpdateRequest;
+import at.fh.technikum.paperless_rest.api.dto.response.DocumentResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

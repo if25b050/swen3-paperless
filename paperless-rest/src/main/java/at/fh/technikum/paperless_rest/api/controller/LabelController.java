@@ -1,12 +1,12 @@
-package at.fh.technikum.paperless_rest.presentation.controller;
+package at.fh.technikum.paperless_rest.api.controller;
 
 import at.fh.technikum.paperless_rest.business.mapper.LabelMapper;
 import at.fh.technikum.paperless_rest.business.model.label.LabelCreateModel;
 import at.fh.technikum.paperless_rest.business.model.label.LabelDeleteModel;
 import at.fh.technikum.paperless_rest.business.model.label.LabelModel;
 import at.fh.technikum.paperless_rest.business.model.label.LabelUpdateModel;
-import at.fh.technikum.paperless_rest.business.services.LabelService;
-import at.fh.technikum.paperless_rest.presentation.dto.response.LabelResponse;
+import at.fh.technikum.paperless_rest.business.service.LabelService;
+import at.fh.technikum.paperless_rest.api.dto.response.LabelResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

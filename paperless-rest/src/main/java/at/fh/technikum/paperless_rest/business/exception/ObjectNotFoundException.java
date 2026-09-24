@@ -1,4 +1,4 @@
-package at.fh.technikum.paperless_rest.business.exceptions;
+package at.fh.technikum.paperless_rest.business.exception;
 
 public class ObjectNotFoundException extends RuntimeException {
     public ObjectNotFoundException(String message) {
