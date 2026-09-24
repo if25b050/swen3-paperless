@@ -2,44 +2,39 @@ package at.fh.technikum.paperless_rest.presentation.controller;
 
 import at.fh.technikum.paperless_rest.business.exceptions.ModelValidationFailedException;
 import at.fh.technikum.paperless_rest.business.exceptions.ObjectNotFoundException;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ControllerAdvice
 @Slf4j
 public class GlobalControllerExceptionHandler {
 
-    @ResponseStatus(HttpStatus.CONFLICT)  // 409
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public String handleConflict(DataIntegrityViolationException ex) {
+    public ProblemDetail handleConflict(DataIntegrityViolationException ex) {
         log.error(ex.getMessage(), ex);
-        // TODO more specific Message?
-        return ex.getMessage();
+        return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, "There was a conflict when inserting.");
     }
 
-    @ResponseStatus(HttpStatus.BAD_REQUEST)  // 400
     @ExceptionHandler(ModelValidationFailedException.class)
-    public String handleValidationFailed(ModelValidationFailedException ex) {
+    public ProblemDetail handleValidationFailed(ModelValidationFailedException ex) {
         log.warn(ex.getMessage(), ex);
-        return ex.getMessage();
+        return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
-    @ResponseStatus(HttpStatus.NOT_FOUND)  // 404
     @ExceptionHandler(ObjectNotFoundException.class)
-    public String handleNotFound(ObjectNotFoundException ex) {
+    public ProblemDetail handleNotFound(ObjectNotFoundException ex) {
         log.warn(ex.getMessage(), ex);
-        return ex.getMessage();
+        return ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
     }
 
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)  // 500
     @ExceptionHandler(Exception.class)
-    public String exceptionFallback(Exception ex) {
-        log.error(ex.getMessage(), ex);
-        return "Some error occurred.";
+    public ProblemDetail exceptionFallback(HttpServletRequest req, Exception ex) {
+        log.error("Request: {} raised {}", req.getRequestURL(), ex.getMessage(), ex);
+        return ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
     }
-
 }

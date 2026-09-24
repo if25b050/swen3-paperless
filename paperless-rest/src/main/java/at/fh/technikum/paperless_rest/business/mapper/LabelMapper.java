@@ -14,5 +14,6 @@ public interface LabelMapper {
     LabelModel toModel(LabelEntity labelEntity);
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "documents", ignore = true)
     LabelEntity toEntity(LabelCreateModel labelCreateModel);
 }

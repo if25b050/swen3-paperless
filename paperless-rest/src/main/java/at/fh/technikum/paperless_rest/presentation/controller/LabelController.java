@@ -1,11 +1,15 @@
 package at.fh.technikum.paperless_rest.presentation.controller;
 
+import at.fh.technikum.paperless_rest.business.mapper.DocumentMapper;
 import at.fh.technikum.paperless_rest.business.mapper.LabelMapper;
+import at.fh.technikum.paperless_rest.business.model.document.DocumentModel;
 import at.fh.technikum.paperless_rest.business.model.label.LabelCreateModel;
 import at.fh.technikum.paperless_rest.business.model.label.LabelDeleteModel;
 import at.fh.technikum.paperless_rest.business.model.label.LabelModel;
 import at.fh.technikum.paperless_rest.business.model.label.LabelUpdateModel;
+import at.fh.technikum.paperless_rest.business.services.DocumentService;
 import at.fh.technikum.paperless_rest.business.services.LabelService;
+import at.fh.technikum.paperless_rest.presentation.dto.response.DocumentResponse;
 import at.fh.technikum.paperless_rest.presentation.dto.response.LabelResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -13,16 +17,20 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("labels")
+@RequestMapping("/api/labels")
 public class LabelController {
 
     private final LabelService labelService;
     private final LabelMapper labelMapper;
+    private final DocumentService documentService;
+    private final DocumentMapper documentMapper;
 
     @Autowired
-    public LabelController(LabelService labelService, LabelMapper labelMapper) {
+    public LabelController(LabelService labelService, LabelMapper labelMapper, DocumentService documentService, DocumentMapper documentMapper) {
         this.labelService = labelService;
         this.labelMapper = labelMapper;
+        this.documentService = documentService;
+        this.documentMapper = documentMapper;
     }
 
     @GetMapping(produces = "application/json")
@@ -35,6 +43,14 @@ public class LabelController {
     public LabelResponse getLabel(@PathVariable int id) {
         LabelModel label = labelService.getLabelById(id);
         return labelMapper.toResponse(label);
+    }
+
+    @GetMapping(path = "/{id}/documents", produces = "application/json")
+    public List<DocumentResponse> getDocumentsWithLabel(@PathVariable int id) {
+        List<DocumentModel> documentsModels = documentService.getDocumentsByLabel(id);
+        return documentsModels.stream()
+                .map(documentMapper::toDocumentResponse)
+                .toList();
     }
 
     @PostMapping(consumes = "text/plain", produces = "application/json")
