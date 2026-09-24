@@ -9,7 +9,6 @@ services:
       POSTGRES_DB: paperless
     volumes:
       - db:/data/postgres
-      - ./init.sql:/docker-entrypoint-initdb.d/create_database.sql
     ports:
       - "5432:5432"
     restart: unless-stopped
