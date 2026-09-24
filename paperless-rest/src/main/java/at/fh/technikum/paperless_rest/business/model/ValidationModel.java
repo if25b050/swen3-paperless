@@ -9,7 +9,7 @@ public interface ValidationModel {
 
     static void validate(ValidationModel i) {
         String s = i.validationLogic();
-        if (!StringUtils.hasText(s)) {
+        if (StringUtils.hasText(s)) {
             throw new ModelValidationFailedException(s);
         }
     }

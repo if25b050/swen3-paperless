@@ -78,6 +78,7 @@ public class DocumentRepoService {
     public DocumentModel createDocument(DocumentCreateModel documentCreateModel) {
         ValidationModel.validate(documentCreateModel);
 
+        // TODO Lambda fuer Rollback logik mit verteilten Transaktionen
         String fileUrl = fileIntegration.saveFile(documentCreateModel.file());
         DocumentEntity documentEntity = documentMapper.toDocumentEntity(documentCreateModel, fileUrl);
 

@@ -3,16 +3,16 @@ package at.fh.technikum.paperless_rest.api.controller;
 import at.fh.technikum.paperless_rest.business.mapper.DocumentMapper;
 import at.fh.technikum.paperless_rest.business.model.document.*;
 import at.fh.technikum.paperless_rest.business.service.DocumentService;
-import at.fh.technikum.paperless_rest.api.dto.request.DocumentCreateRequest;
 import at.fh.technikum.paperless_rest.api.dto.request.DocumentUpdateRequest;
 import at.fh.technikum.paperless_rest.api.dto.response.DocumentResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("documents")
+@RequestMapping("/api/v1/documents")
 public class DocumentController {
 
     private final DocumentService documentService;
@@ -39,17 +39,9 @@ public class DocumentController {
         return documentMapper.toDocumentResponse(documentModel);
     }
 
-    @GetMapping(path = "/{labelId}/documents", produces = "application/json")
-    public List<DocumentResponse> getDocumentsWithLabel(@PathVariable int labelId) {
-        List<DocumentModel> documentsModels = documentService.getDocumentsByLabel(labelId);
-        return documentsModels.stream()
-                .map(documentMapper::toDocumentResponse)
-                .toList();
-    }
-
-    @PostMapping(consumes = "application/json", produces = "application/json")
-    public DocumentResponse createDocument(@RequestBody DocumentCreateRequest documentCreateRequest) {
-        DocumentCreateModel documentCreateModel = documentMapper.toDocumentCreateModel(documentCreateRequest);
+    @PostMapping(produces = "application/json")
+    public DocumentResponse createDocument(@RequestParam("file") MultipartFile file) {
+        DocumentCreateModel documentCreateModel = documentMapper.toDocumentCreateModel(file);
         DocumentModel documentModel = documentService.createDocument(documentCreateModel);
         return documentMapper.toDocumentResponse(documentModel);
     }
@@ -61,8 +53,8 @@ public class DocumentController {
         return documentMapper.toDocumentResponse(documentModel);
     }
 
-    @PutMapping(path = "/{id}/file", consumes = "application/octet-stream", produces = "application/json")
-    public DocumentResponse updateDocumentFile(@PathVariable int id, @RequestBody byte[] file) {
+    @PostMapping(path = "/{id}/file", produces = "application/json")
+    public DocumentResponse updateDocumentFile(@PathVariable int id, @RequestParam("file") MultipartFile file) {
         DocumentUpdateFileModel documentUpdateFileModel = documentMapper.toDocumentUpdateFileModel(id, file);
         DocumentModel documentModel = documentService.updateDocumentFile(documentUpdateFileModel);
         return documentMapper.toDocumentResponse(documentModel);

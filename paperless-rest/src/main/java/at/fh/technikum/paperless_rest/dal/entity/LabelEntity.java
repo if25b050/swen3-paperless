@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -14,12 +15,13 @@ import java.util.List;
 @Table(name = "labels")
 public class LabelEntity {
     @Id
+    @Column
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @Column(nullable = false, unique = true) // um doppelte Labels zu vermeiden
     private String name;
 
-    @ManyToMany(mappedBy = "labels")
-    private List<DocumentEntity> documents;
+    @ManyToMany(mappedBy = "labels", fetch = FetchType.LAZY)
+    private List<DocumentEntity> documents = new ArrayList<>();
 }
