@@ -1,10 +1,10 @@
-package at.fh.technikum.paperless_rest.presentation.controller;
+package at.fh.technikum.paperless_rest.api.controller;
 
 import at.fh.technikum.paperless_rest.business.mapper.DocumentMapper;
 import at.fh.technikum.paperless_rest.business.model.document.*;
-import at.fh.technikum.paperless_rest.business.services.DocumentService;
-import at.fh.technikum.paperless_rest.presentation.dto.request.DocumentUpdateRequest;
-import at.fh.technikum.paperless_rest.presentation.dto.response.DocumentResponse;
+import at.fh.technikum.paperless_rest.business.service.DocumentService;
+import at.fh.technikum.paperless_rest.api.dto.request.DocumentUpdateRequest;
+import at.fh.technikum.paperless_rest.api.dto.response.DocumentResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;

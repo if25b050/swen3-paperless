@@ -1,7 +1,7 @@
-package at.fh.technikum.paperless_rest.presentation.controller;
+package at.fh.technikum.paperless_rest.api.controller;
 
-import at.fh.technikum.paperless_rest.business.exceptions.ModelValidationFailedException;
-import at.fh.technikum.paperless_rest.business.exceptions.ObjectNotFoundException;
+import at.fh.technikum.paperless_rest.business.exception.ModelValidationFailedException;
+import at.fh.technikum.paperless_rest.business.exception.ObjectNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;

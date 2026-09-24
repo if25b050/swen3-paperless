@@ -1,4 +1,4 @@
-package at.fh.technikum.paperless_rest.presentation.dto.response;
+package at.fh.technikum.paperless_rest.api.dto.response;
 
 import at.fh.technikum.paperless_rest.business.model.label.LabelModel;
 

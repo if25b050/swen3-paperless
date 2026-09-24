@@ -1,4 +1,4 @@
-package at.fh.technikum.paperless_rest.business.integrations;
+package at.fh.technikum.paperless_rest.business.integration;
 
 import org.springframework.stereotype.Service;
 

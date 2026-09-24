@@ -1,7 +1,7 @@
-package at.fh.technikum.paperless_rest.business.services;
+package at.fh.technikum.paperless_rest.dal.service;
 
-import at.fh.technikum.paperless_rest.business.exceptions.ObjectNotFoundException;
-import at.fh.technikum.paperless_rest.business.integrations.FileIntegration;
+import at.fh.technikum.paperless_rest.business.exception.ObjectNotFoundException;
+import at.fh.technikum.paperless_rest.business.integration.FileIntegration;
 import at.fh.technikum.paperless_rest.business.mapper.DocumentMapper;
 import at.fh.technikum.paperless_rest.business.model.ValidationModel;
 import at.fh.technikum.paperless_rest.business.model.document.*;
@@ -9,21 +9,20 @@ import at.fh.technikum.paperless_rest.dal.entity.DocumentEntity;
 import at.fh.technikum.paperless_rest.dal.entity.LabelEntity;
 import at.fh.technikum.paperless_rest.dal.repository.DocumentRepository;
 import at.fh.technikum.paperless_rest.dal.repository.LabelRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
-public class DocumentService {
-    private final DocumentRepository documentRepository;
-    private final LabelRepository labelRepository;
-    private final DocumentMapper documentMapper;
-    private final FileIntegration fileIntegration;
+public class DocumentRepoService {
 
-    @Autowired
-    public DocumentService(DocumentRepository documentRepository, LabelRepository labelRepository, DocumentMapper documentMapper, FileIntegration fileIntegration) {
+    DocumentRepository documentRepository;
+    LabelRepository labelRepository;
+    DocumentMapper documentMapper;
+    FileIntegration fileIntegration;
+
+    public DocumentRepoService(DocumentRepository documentRepository, LabelRepository labelRepository, DocumentMapper documentMapper, FileIntegration fileIntegration) {
         this.documentRepository = documentRepository;
         this.labelRepository = labelRepository;
         this.documentMapper = documentMapper;

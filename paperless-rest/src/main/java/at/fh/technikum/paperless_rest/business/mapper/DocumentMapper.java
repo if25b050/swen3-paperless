@@ -1,13 +1,13 @@
 package at.fh.technikum.paperless_rest.business.mapper;
 
-import at.fh.technikum.paperless_rest.business.exceptions.ModelValidationFailedException;
+import at.fh.technikum.paperless_rest.api.dto.request.DocumentUpdateRequest;
+import at.fh.technikum.paperless_rest.api.dto.response.DocumentResponse;
+import at.fh.technikum.paperless_rest.business.exception.ModelValidationFailedException;
 import at.fh.technikum.paperless_rest.business.model.document.DocumentCreateModel;
 import at.fh.technikum.paperless_rest.business.model.document.DocumentModel;
 import at.fh.technikum.paperless_rest.business.model.document.DocumentUpdateFileModel;
 import at.fh.technikum.paperless_rest.business.model.document.DocumentUpdateModel;
 import at.fh.technikum.paperless_rest.dal.entity.DocumentEntity;
-import at.fh.technikum.paperless_rest.presentation.dto.request.DocumentUpdateRequest;
-import at.fh.technikum.paperless_rest.presentation.dto.response.DocumentResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.springframework.web.multipart.MultipartFile;

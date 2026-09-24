@@ -1,6 +1,6 @@
 package at.fh.technikum.paperless_rest.business.model;
 
-import at.fh.technikum.paperless_rest.business.exceptions.ModelValidationFailedException;
+import at.fh.technikum.paperless_rest.business.exception.ModelValidationFailedException;
 import org.springframework.util.StringUtils;
 
 public interface ValidationModel {

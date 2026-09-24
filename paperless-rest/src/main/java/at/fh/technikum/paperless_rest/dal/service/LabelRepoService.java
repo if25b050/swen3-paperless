@@ -1,6 +1,6 @@
-package at.fh.technikum.paperless_rest.business.services;
+package at.fh.technikum.paperless_rest.dal.service;
 
-import at.fh.technikum.paperless_rest.business.exceptions.ObjectNotFoundException;
+import at.fh.technikum.paperless_rest.business.exception.ObjectNotFoundException;
 import at.fh.technikum.paperless_rest.business.mapper.LabelMapper;
 import at.fh.technikum.paperless_rest.business.model.ValidationModel;
 import at.fh.technikum.paperless_rest.business.model.label.LabelCreateModel;
@@ -9,18 +9,19 @@ import at.fh.technikum.paperless_rest.business.model.label.LabelModel;
 import at.fh.technikum.paperless_rest.business.model.label.LabelUpdateModel;
 import at.fh.technikum.paperless_rest.dal.entity.LabelEntity;
 import at.fh.technikum.paperless_rest.dal.repository.LabelRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-public class LabelService {
+public class LabelRepoService {
+    private final LabelRepository labelRepository;
+    private final LabelMapper labelMapper;
 
-    @Autowired
-    private LabelRepository labelRepository;
-    @Autowired
-    private LabelMapper labelMapper;
+    public LabelRepoService(LabelRepository labelRepository, LabelMapper labelMapper) {
+        this.labelRepository = labelRepository;
+        this.labelMapper = labelMapper;
+    }
 
     public List<LabelModel> getAllLabels() {
         List<LabelEntity> labels = labelRepository.findAll();
@@ -35,7 +36,6 @@ public class LabelService {
     }
 
     public LabelModel createLabel(LabelCreateModel labelCreateModel) {
-        ValidationModel.validate(labelCreateModel);
 
         LabelEntity entity = labelMapper.toEntity(labelCreateModel);
         entity = labelRepository.save(entity);
@@ -62,4 +62,5 @@ public class LabelService {
 
         labelRepository.deleteById(labelDeleteModel.id());
     }
+
 }
