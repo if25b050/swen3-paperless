@@ -69,8 +69,11 @@ jobs:
 
     - name: Check Folder
       run: ls
-    - name: Change Graldew Permission
-      run: chmod +x ./gradlew
+    - name: Check Folder 2
+      run: pwd
+
+    # - name: Change Graldew Permission
+    #   run: chmod +x ./gradlew
 
 
     # Generates and submits a dependency graph, enabling Dependabot Alerts for all project dependencies.
