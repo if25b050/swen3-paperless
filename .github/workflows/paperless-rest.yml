@@ -22,6 +22,9 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+    defaults:
+      run:
+        working-directory: paperless-rest
 
     steps:
     - uses: actions/checkout@v4
@@ -37,8 +40,6 @@ jobs:
     # See: https://github.com/gradle/actions/blob/main/setup-gradle/README.md
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
-    - name: Change Folder
-      run: cd paperless-rest && ls
     - name: Change Graldew Permission
       run: chmod +x ./gradlew
     - name: Build with Gradle Wrapper
