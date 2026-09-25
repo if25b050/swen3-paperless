@@ -25,6 +25,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+      with:
+        path: paperless-rest
     - name: Set up JDK 25
       uses: actions/setup-java@v5
       with:
@@ -36,9 +38,9 @@ jobs:
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
     - name: Change Graldew Permission
-      run: chmod +x ./paperless-rest/gradlew
+      run: chmod +x ./gradlew
     - name: Build with Gradle Wrapper
-      run: ./paperless-rest/gradlew build
+      run: ./gradlew build
 
     # NOTE: The Gradle Wrapper is the default and recommended way to run Gradle (https://docs.gradle.org/current/userguide/gradle_wrapper.html).
     # If your project does not have the Gradle Wrapper configured, you can use the following configuration to run Gradle with a specified version.
