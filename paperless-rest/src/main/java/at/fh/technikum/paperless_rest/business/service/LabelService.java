@@ -9,6 +9,7 @@ import at.fh.technikum.paperless_rest.dal.service.LabelRepoService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class LabelService {
@@ -23,8 +24,8 @@ public class LabelService {
         return labelRepoService.getAllLabels();
     }
 
-    public LabelModel getLabelById(int id) {
-        return labelRepoService.getLabelById(id);
+    public LabelModel getLabelById(String uuid) {
+        return labelRepoService.getLabelById(UUID.fromString(uuid));
     }
 
     public LabelModel createLabel(LabelCreateModel labelCreateModel) {

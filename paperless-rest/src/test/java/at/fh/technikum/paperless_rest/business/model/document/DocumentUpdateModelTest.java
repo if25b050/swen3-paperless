@@ -7,32 +7,31 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 class DocumentUpdateModelTest {
     List<String> labels = new ArrayList<>();
 
-    @ParameterizedTest
-    @ValueSource(ints = {Integer.MIN_VALUE, -69, 0})
-    @DisplayName("Return ID should be greater than 0")
-    void idShouldBeGreaterThanZero(int id) {
+    @Test
+    @DisplayName("Return UUID is required")
+    void uuidIsRequiredNull() {
         // Given
-        DocumentUpdateModel model = new DocumentUpdateModel(id, "Julius", labels);
+        DocumentUpdateModel model = new DocumentUpdateModel(null, "Julius", labels);
 
         // When
         String validationResult = model.validationLogic();
 
         //Then
-        assertThat(validationResult).isEqualTo("ID should be greater than 0.");
+        assertThat(validationResult).isEqualTo("UUID is required.");
     }
 
     @Test
     @DisplayName("Return Name is  required when name is null")
-    void nameIsNull(){
+    void nameIsNull() {
         // Given
-        DocumentUpdateModel model = new DocumentUpdateModel(67, null, labels);
+        DocumentUpdateModel model = new DocumentUpdateModel(UUID.randomUUID(), null, labels);
 
         // When
         String validationResult = model.validationLogic();
@@ -44,12 +43,12 @@ class DocumentUpdateModelTest {
     @ParameterizedTest
     @ValueSource(strings = {"", " ", "\n", "\t"})
     @DisplayName("Return Name is required when name is blank")
-    void fileIsRequiredEmpty(String name){
+    void fileIsRequiredEmpty(String name) {
         // Given
-        DocumentUpdateModel model = new DocumentUpdateModel(67, name, labels);
+        DocumentUpdateModel model = new DocumentUpdateModel(UUID.randomUUID(), name, labels);
 
         // When
-        String  validationResult = model.validationLogic();
+        String validationResult = model.validationLogic();
 
         //Then
         assertThat(validationResult).isEqualTo("Name is required.");
@@ -57,9 +56,9 @@ class DocumentUpdateModelTest {
 
     @Test
     @DisplayName("Return empty string when everything is valid")
-    void everythingIsValid(){
+    void everythingIsValid() {
         // Given
-        DocumentUpdateModel model = new DocumentUpdateModel(67, "Sieglinde", labels);
+        DocumentUpdateModel model = new DocumentUpdateModel(UUID.randomUUID(), "Sieglinde", labels);
 
         // When
         String validationResult = model.validationLogic();

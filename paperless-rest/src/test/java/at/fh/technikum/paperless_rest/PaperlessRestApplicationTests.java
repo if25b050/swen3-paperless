@@ -41,6 +41,8 @@ class PaperlessRestApplicationTests {
     @Test
     void contextLoads() {
         // This just tests if the Application can start
+
+        // TODO Test invalid UUID Exception
     }
 
     @Transactional
@@ -57,11 +59,11 @@ class PaperlessRestApplicationTests {
         DocumentResponse createResponse = createTestDocument();
 
         // Check if get returns the same as create
-        mvc.perform(get("/api/v1/documents/{0}", createResponse.id()))
+        mvc.perform(get("/api/v1/documents/{0}", createResponse.uuid()))
                 .andExpect(status().isOk())
                 .andExpectAll(
                         jsonPath("$.name").value(createResponse.name()),
-                        jsonPath("$.id").value(createResponse.id()),
+                        jsonPath("$.uuid").value(createResponse.uuid()),
                         jsonPath("$.fileUrl").value(createResponse.fileUrl()),
                         jsonPath("$.labels").value(createResponse.labels())
                 );
@@ -75,10 +77,10 @@ class PaperlessRestApplicationTests {
         // Test the update document function
         String label1 = "Label 1";
         String label2 = "Label 2";
-        updateDocumentWithLabels(createResponse.id(), "Test File 2", label1, label2);
+        updateDocumentWithLabels(createResponse.uuid(), "Test File 2", label1, label2);
 
         // Test update file
-        mvc.perform(multipart("/api/v1/documents/{0}/file", createResponse.id())
+        mvc.perform(multipart("/api/v1/documents/{0}/file", createResponse.uuid())
                         .file("file", "This is new File Content!".getBytes(StandardCharsets.UTF_8)))
                 .andExpect(status().isOk())
                 .andExpect(
@@ -86,7 +88,7 @@ class PaperlessRestApplicationTests {
                 );
 
         // Test invalid file upload
-        mvc.perform(multipart("/api/v1/documents/{0}/file", createResponse.id())
+        mvc.perform(multipart("/api/v1/documents/{0}/file", createResponse.uuid())
                         .file("file", "".getBytes(StandardCharsets.UTF_8)))
                 .andExpect(status().isBadRequest())
                 .andExpect(
@@ -95,7 +97,7 @@ class PaperlessRestApplicationTests {
         // TODO Test file content after update
 
         // Test delete file
-        mvc.perform(delete("/api/v1/documents/{0}", createResponse.id()))
+        mvc.perform(delete("/api/v1/documents/{0}", createResponse.uuid()))
                 .andExpect(status().isOk());
 
         // Test that there are no documents
@@ -122,7 +124,7 @@ class PaperlessRestApplicationTests {
                 .andExpect(status().isOk())
                 .andExpectAll(
                         jsonPath("$.name").value(testCustomLabel),
-                        jsonPath("$.id").isNotEmpty()
+                        jsonPath("$.uuid").isNotEmpty()
                 )
                 .andReturn();
 
@@ -134,11 +136,11 @@ class PaperlessRestApplicationTests {
                 .andExpect(content().string(not("[]")));
 
         // Set the document label for further tests
-        updateDocumentWithLabels(testDocument.id(), testDocument.name(), testCustomLabel);
+        updateDocumentWithLabels(testDocument.uuid(), testDocument.name(), testCustomLabel);
 
         // Test label update
         String newTestCustomLabel = "New Test Custom Label";
-        mvc.perform(put("/api/v1/labels/{0}", labelCreateResponse.id())
+        mvc.perform(put("/api/v1/labels/{0}", labelCreateResponse.uuid())
                         .contentType(MediaType.TEXT_PLAIN)
                         .content(newTestCustomLabel))
                 .andExpect(status().isOk())
@@ -156,16 +158,16 @@ class PaperlessRestApplicationTests {
                 );
 
         // Test find documents with label
-        mvc.perform(get("/api/v1/labels/{0}/documents", labelCreateResponse.id()))
+        mvc.perform(get("/api/v1/labels/{0}/documents", labelCreateResponse.uuid()))
                 .andExpect(status().isOk())
                 .andExpect(content().string(not("[]")));
 
         // Test delete label
-        mvc.perform(delete("/api/v1/documents/{0}", testDocument.id()))
+        mvc.perform(delete("/api/v1/documents/{0}", testDocument.uuid()))
                 .andExpect(status().isOk());
 
         // Test if documents can not be found by removed label
-        mvc.perform(get("/api/v1/labels/{0}/documents", labelCreateResponse.id()))
+        mvc.perform(get("/api/v1/labels/{0}/documents", labelCreateResponse.uuid()))
                 .andExpect(status().isOk())
                 .andExpect(content().string("[]"));
     }
@@ -182,7 +184,7 @@ class PaperlessRestApplicationTests {
                 .andExpect(status().isOk())
                 .andExpectAll(
                         jsonPath("$.name").value(documentCreateModel.name()),
-                        jsonPath("$.id").isNotEmpty(),
+                        jsonPath("$.uuid").isNotEmpty(),
                         jsonPath("$.fileUrl").isNotEmpty(),
                         jsonPath("$.labels").isArray()
                 )
@@ -191,10 +193,10 @@ class PaperlessRestApplicationTests {
         return objectMapper.readValue(createMvcResult.getResponse().getContentAsString(), DocumentResponse.class);
     }
 
-    private void updateDocumentWithLabels(int id, String newFileName, String... labels) throws Exception {
+    private void updateDocumentWithLabels(String uuid, String newFileName, String... labels) throws Exception {
         DocumentUpdateRequest documentUpdateRequest = new DocumentUpdateRequest(newFileName, Arrays.asList(labels));
 
-        mvc.perform(put("/api/v1/documents/{0}", id)
+        mvc.perform(put("/api/v1/documents/{0}", uuid)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(documentUpdateRequest)))
                 .andExpect(status().isOk())

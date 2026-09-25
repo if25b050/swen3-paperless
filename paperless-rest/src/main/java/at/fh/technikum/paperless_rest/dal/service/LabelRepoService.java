@@ -12,6 +12,7 @@ import at.fh.technikum.paperless_rest.dal.repository.LabelRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class LabelRepoService {
@@ -28,9 +29,9 @@ public class LabelRepoService {
         return labels.stream().map(labelMapper::toModel).toList();
     }
 
-    public LabelModel getLabelById(int id) {
-        LabelEntity labelEntity = labelRepository.findById(id)
-                .orElseThrow(() -> new ObjectNotFoundException("Label with id: " + id + " not found."));
+    public LabelModel getLabelById(UUID uuid) {
+        LabelEntity labelEntity = labelRepository.findById(uuid)
+                .orElseThrow(() -> new ObjectNotFoundException("Label with uuid: " + uuid + " not found."));
 
         return labelMapper.toModel(labelEntity);
     }
@@ -46,8 +47,8 @@ public class LabelRepoService {
     public LabelModel updateLabel(LabelUpdateModel labelUpdateModel) {
         ValidationModel.validate(labelUpdateModel);
 
-        LabelEntity labelEntity = labelRepository.findById(labelUpdateModel.id())
-                .orElseThrow(() -> new ObjectNotFoundException("Label with id: " + labelUpdateModel.id() + " not found."));
+        LabelEntity labelEntity = labelRepository.findById(labelUpdateModel.uuid())
+                .orElseThrow(() -> new ObjectNotFoundException("Label with uuid: " + labelUpdateModel.uuid() + " not found."));
 
         labelEntity.setName(labelUpdateModel.name());
 
@@ -60,7 +61,7 @@ public class LabelRepoService {
     public void deleteLabel(LabelDeleteModel labelDeleteModel) {
         ValidationModel.validate(labelDeleteModel);
 
-        labelRepository.deleteById(labelDeleteModel.id());
+        labelRepository.deleteById(labelDeleteModel.uuid());
     }
 
 }

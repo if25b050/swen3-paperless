@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class DocumentService {
@@ -16,10 +17,10 @@ public class DocumentService {
     @Autowired
     public DocumentService(DocumentRepoService documentRepoService) {
         this.documentRepoService = documentRepoService;
-        }
+    }
 
-    public DocumentModel getDocumentById(int id) {
-       return documentRepoService.getDocumentById(id);
+    public DocumentModel getDocumentById(String uuid) {
+        return documentRepoService.getDocumentById(UUID.fromString(uuid));
     }
 
     public List<DocumentModel> getAllDocuments() {
@@ -54,7 +55,7 @@ public class DocumentService {
         return documentRepoService.updateDocumentFile(documentUpdateFileModel);
     }
 
-    public List<DocumentModel> getDocumentsByLabel(int labelId) {
-       return documentRepoService.getDocumentsByLabel(labelId);
+    public List<DocumentModel> getDocumentsByLabel(String labelUuid) {
+        return documentRepoService.getDocumentsByLabel(UUID.fromString(labelUuid));
     }
 }

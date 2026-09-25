@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class DocumentRepoService {
@@ -29,9 +30,9 @@ public class DocumentRepoService {
         this.fileIntegration = fileIntegration;
     }
 
-    public DocumentModel getDocumentById(int id) {
-        DocumentEntity documentEntity = documentRepository.findById(id)
-                .orElseThrow(() -> new ObjectNotFoundException("Document with id: " + id + " not found."));
+    public DocumentModel getDocumentById(UUID uuid) {
+        DocumentEntity documentEntity = documentRepository.findById(uuid)
+                .orElseThrow(() -> new ObjectNotFoundException("Document with uuid: " + uuid + " not found."));
 
         return documentMapper.toDocumentModel(documentEntity);
     }
@@ -46,8 +47,8 @@ public class DocumentRepoService {
     public DocumentModel updateDocument(DocumentUpdateModel documentUpdateModel) {
         ValidationModel.validate(documentUpdateModel);
 
-        DocumentEntity documentEntity = documentRepository.findById(documentUpdateModel.id())
-                .orElseThrow(() -> new ObjectNotFoundException("Document with id: " + documentUpdateModel.id() + " not found."));
+        DocumentEntity documentEntity = documentRepository.findById(documentUpdateModel.uuid())
+                .orElseThrow(() -> new ObjectNotFoundException("Document with uuid: " + documentUpdateModel.uuid() + " not found."));
 
         documentEntity.setName(documentUpdateModel.name());
 
@@ -71,7 +72,7 @@ public class DocumentRepoService {
     public void deleteDocument(DocumentDeleteModel documentDeleteModel) {
         ValidationModel.validate(documentDeleteModel);
 
-        documentRepository.deleteById(documentDeleteModel.id());
+        documentRepository.deleteById(documentDeleteModel.uuid());
     }
 
     @Transactional
@@ -91,8 +92,8 @@ public class DocumentRepoService {
     public DocumentModel updateDocumentFile(DocumentUpdateFileModel documentUpdateFileModel) {
         ValidationModel.validate(documentUpdateFileModel);
 
-        DocumentEntity documentEntity = documentRepository.findById(documentUpdateFileModel.id())
-                .orElseThrow(() -> new ObjectNotFoundException("Document with id: " + documentUpdateFileModel.id() + " not found."));
+        DocumentEntity documentEntity = documentRepository.findById(documentUpdateFileModel.uuid())
+                .orElseThrow(() -> new ObjectNotFoundException("Document with uuid: " + documentUpdateFileModel.uuid() + " not found."));
 
         fileIntegration.deleteFile(documentEntity.getFileUrl());
 
@@ -103,8 +104,8 @@ public class DocumentRepoService {
         return documentMapper.toDocumentModel(documentEntity);
     }
 
-    public List<DocumentModel> getDocumentsByLabel(int labelId) {
-        List<DocumentEntity> byLabelsId = documentRepository.findByLabels_Id(labelId);
-        return byLabelsId.stream().map(documentMapper::toDocumentModel).toList();
+    public List<DocumentModel> getDocumentsByLabel(UUID labelUuid) {
+        List<DocumentEntity> byLabelsUuid = documentRepository.findByLabelsUuid(labelUuid);
+        return byLabelsUuid.stream().map(documentMapper::toDocumentModel).toList();
     }
 }

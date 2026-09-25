@@ -1,34 +1,31 @@
 package at.fh.technikum.paperless_rest.business.model.document;
 
-import lombok.Value;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
+
+import java.util.UUID;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 class DocumentUpdateFileModelTest {
-    @ParameterizedTest
-    @ValueSource(ints = {Integer.MIN_VALUE, -69, 0})
-    @DisplayName("Return ID should be greater than 0")
-    void idShouldBeGreaterThanZero(int id) {
+    @Test
+    @DisplayName("Return UUID is required")
+    void uuidIsRequiredNull() {
         // Given
-        DocumentUpdateFileModel model = new DocumentUpdateFileModel(id, new byte[] {67, 69});
+        DocumentUpdateFileModel model = new DocumentUpdateFileModel(null, new byte[]{67, 69});
 
         // When
         String validationResult = model.validationLogic();
 
         //Then
-        assertThat(validationResult).isEqualTo("ID should be greater than 0.");
+        assertThat(validationResult).isEqualTo("UUID is required.");
     }
 
     @Test
     @DisplayName("Return File is required when byte[] is null")
-    void fileIsRequiredNull(){
+    void fileIsRequiredNull() {
         // Given
-        DocumentUpdateFileModel model = new DocumentUpdateFileModel(67, null);
+        DocumentUpdateFileModel model = new DocumentUpdateFileModel(UUID.randomUUID(), null);
 
         // When
         String validationResult = model.validationLogic();
@@ -39,12 +36,12 @@ class DocumentUpdateFileModelTest {
 
     @Test
     @DisplayName("Return File is required when byte[] is empty")
-    void fileIsRequiredEmpty(){
+    void fileIsRequiredEmpty() {
         // Given
-        DocumentUpdateFileModel model = new DocumentUpdateFileModel(67, new byte[0]);
+        DocumentUpdateFileModel model = new DocumentUpdateFileModel(UUID.randomUUID(), new byte[0]);
 
         // When
-        String  validationResult = model.validationLogic();
+        String validationResult = model.validationLogic();
 
         //Then
         assertThat(validationResult).isEqualTo("File is required.");
@@ -52,9 +49,9 @@ class DocumentUpdateFileModelTest {
 
     @Test
     @DisplayName("Return empty string when everything is valid")
-    void everythingIsValid(){
+    void everythingIsValid() {
         // Given
-        DocumentUpdateFileModel model = new DocumentUpdateFileModel(67, new byte[67]);
+        DocumentUpdateFileModel model = new DocumentUpdateFileModel(UUID.randomUUID(), new byte[67]);
 
         // When
         String validationResult = model.validationLogic();

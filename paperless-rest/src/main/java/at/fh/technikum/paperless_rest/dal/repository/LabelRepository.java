@@ -6,14 +6,15 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
-public interface LabelRepository extends JpaRepository<LabelEntity, Integer> {
+public interface LabelRepository extends JpaRepository<LabelEntity, UUID> {
     // Label nach Namen suchen
     Optional<LabelEntity> findByName(String name);
 
     // Liefer alle Labels, die einem bestimmten Dokument zugewiesen sind
-    List<LabelEntity> findByDocuments_Id(Integer documentId);
+    List<LabelEntity> findByDocumentsUuid(UUID documentId);
 
     // Liefert alle Labels, die mindestens einem Dokument zugewiesen sind
     List<LabelEntity> findDistinctByDocumentsIsNotEmpty();

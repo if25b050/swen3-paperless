@@ -13,6 +13,7 @@ import org.mapstruct.Mapping;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.UUID;
 
 @Mapper(componentModel = "spring")
 public abstract class DocumentMapper {
@@ -24,17 +25,17 @@ public abstract class DocumentMapper {
         }
     }
 
-    public abstract DocumentUpdateModel toDocumentUpdateModel(int id, DocumentUpdateRequest documentUpdateRequest);
+    public abstract DocumentUpdateModel toDocumentUpdateModel(String uuid, DocumentUpdateRequest documentUpdateRequest);
 
-    public DocumentUpdateFileModel toDocumentUpdateFileModel(int id, MultipartFile multipartFile) {
+    public DocumentUpdateFileModel toDocumentUpdateFileModel(String uuid, MultipartFile multipartFile) {
         try {
-            return new DocumentUpdateFileModel(id, multipartFile.getBytes());
+            return new DocumentUpdateFileModel(UUID.fromString(uuid), multipartFile.getBytes());
         } catch (IOException e) {
             throw new ModelValidationFailedException("The file-upload failed.");
         }
     }
 
-    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "uuid", ignore = true)
     @Mapping(target = "labels", ignore = true)
     public abstract DocumentEntity toDocumentEntity(DocumentCreateModel documentCreateModel, String fileUrl);
 
