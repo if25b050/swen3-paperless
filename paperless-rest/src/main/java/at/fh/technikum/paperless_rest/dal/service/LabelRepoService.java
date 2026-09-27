@@ -2,7 +2,6 @@ package at.fh.technikum.paperless_rest.dal.service;
 
 import at.fh.technikum.paperless_rest.business.exception.ObjectNotFoundException;
 import at.fh.technikum.paperless_rest.business.mapper.LabelMapper;
-import at.fh.technikum.paperless_rest.business.model.ValidationModel;
 import at.fh.technikum.paperless_rest.business.model.label.LabelCreateModel;
 import at.fh.technikum.paperless_rest.business.model.label.LabelDeleteModel;
 import at.fh.technikum.paperless_rest.business.model.label.LabelModel;
@@ -45,8 +44,6 @@ public class LabelRepoService {
     }
 
     public LabelModel updateLabel(LabelUpdateModel labelUpdateModel) {
-        ValidationModel.validate(labelUpdateModel);
-
         LabelEntity labelEntity = labelRepository.findById(labelUpdateModel.uuid())
                 .orElseThrow(() -> new ObjectNotFoundException("Label with uuid: " + labelUpdateModel.uuid() + " not found."));
 
@@ -59,8 +56,6 @@ public class LabelRepoService {
 
 
     public void deleteLabel(LabelDeleteModel labelDeleteModel) {
-        ValidationModel.validate(labelDeleteModel);
-
         labelRepository.deleteById(labelDeleteModel.uuid());
     }
 

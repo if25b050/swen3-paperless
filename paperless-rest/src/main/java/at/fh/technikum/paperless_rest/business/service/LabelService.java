@@ -35,6 +35,8 @@ public class LabelService {
     }
 
     public LabelModel updateLabel(LabelUpdateModel labelUpdateModel) {
+        ValidationModel.validate(labelUpdateModel);
+
         return labelRepoService.updateLabel(labelUpdateModel);
     }
 

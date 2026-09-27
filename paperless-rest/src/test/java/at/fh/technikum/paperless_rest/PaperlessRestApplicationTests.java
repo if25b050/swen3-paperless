@@ -43,6 +43,7 @@ class PaperlessRestApplicationTests {
         // This just tests if the Application can start
 
         // TODO Test invalid UUID Exception
+        // TODO Test Search-API
     }
 
     @Transactional
