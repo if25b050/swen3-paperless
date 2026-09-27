@@ -1,10 +1,11 @@
 package at.fh.technikum.paperless_rest.dal.service;
 
 import at.fh.technikum.paperless_rest.business.exception.ObjectNotFoundException;
-import at.fh.technikum.paperless_rest.business.integration.FileIntegration;
 import at.fh.technikum.paperless_rest.business.mapper.DocumentMapper;
-import at.fh.technikum.paperless_rest.business.model.ValidationModel;
-import at.fh.technikum.paperless_rest.business.model.document.*;
+import at.fh.technikum.paperless_rest.business.model.document.DocumentCreateModel;
+import at.fh.technikum.paperless_rest.business.model.document.DocumentDeleteModel;
+import at.fh.technikum.paperless_rest.business.model.document.DocumentModel;
+import at.fh.technikum.paperless_rest.business.model.document.DocumentUpdateModel;
 import at.fh.technikum.paperless_rest.dal.entity.DocumentEntity;
 import at.fh.technikum.paperless_rest.dal.entity.LabelEntity;
 import at.fh.technikum.paperless_rest.dal.repository.DocumentRepository;
@@ -18,16 +19,14 @@ import java.util.UUID;
 @Service
 public class DocumentRepoService {
 
-    DocumentRepository documentRepository;
-    LabelRepository labelRepository;
-    DocumentMapper documentMapper;
-    FileIntegration fileIntegration;
+    private final DocumentRepository documentRepository;
+    private final LabelRepository labelRepository;
+    private final DocumentMapper documentMapper;
 
-    public DocumentRepoService(DocumentRepository documentRepository, LabelRepository labelRepository, DocumentMapper documentMapper, FileIntegration fileIntegration) {
+    public DocumentRepoService(DocumentRepository documentRepository, LabelRepository labelRepository, DocumentMapper documentMapper) {
         this.documentRepository = documentRepository;
         this.labelRepository = labelRepository;
         this.documentMapper = documentMapper;
-        this.fileIntegration = fileIntegration;
     }
 
     public DocumentModel getDocumentById(UUID uuid) {
@@ -45,8 +44,6 @@ public class DocumentRepoService {
 
     @Transactional
     public DocumentModel updateDocument(DocumentUpdateModel documentUpdateModel) {
-        ValidationModel.validate(documentUpdateModel);
-
         DocumentEntity documentEntity = documentRepository.findById(documentUpdateModel.uuid())
                 .orElseThrow(() -> new ObjectNotFoundException("Document with uuid: " + documentUpdateModel.uuid() + " not found."));
 
@@ -70,17 +67,11 @@ public class DocumentRepoService {
 
     @Transactional
     public void deleteDocument(DocumentDeleteModel documentDeleteModel) {
-        ValidationModel.validate(documentDeleteModel);
-
         documentRepository.deleteById(documentDeleteModel.uuid());
     }
 
     @Transactional
-    public DocumentModel createDocument(DocumentCreateModel documentCreateModel) {
-        ValidationModel.validate(documentCreateModel);
-
-        // TODO Lambda fuer Rollback logik mit verteilten Transaktionen
-        String fileUrl = fileIntegration.saveFile(documentCreateModel.file());
+    public DocumentModel createDocument(DocumentCreateModel documentCreateModel, String fileUrl) {
         DocumentEntity documentEntity = documentMapper.toDocumentEntity(documentCreateModel, fileUrl);
 
         documentEntity = documentRepository.save(documentEntity);
@@ -89,15 +80,10 @@ public class DocumentRepoService {
     }
 
     @Transactional
-    public DocumentModel updateDocumentFile(DocumentUpdateFileModel documentUpdateFileModel) {
-        ValidationModel.validate(documentUpdateFileModel);
+    public DocumentModel updateDocumentFile(UUID uuid, String fileUrl) {
+        DocumentEntity documentEntity = documentRepository.findById(uuid)
+                .orElseThrow(() -> new ObjectNotFoundException("Document with uuid: " + uuid + " not found."));
 
-        DocumentEntity documentEntity = documentRepository.findById(documentUpdateFileModel.uuid())
-                .orElseThrow(() -> new ObjectNotFoundException("Document with uuid: " + documentUpdateFileModel.uuid() + " not found."));
-
-        fileIntegration.deleteFile(documentEntity.getFileUrl());
-
-        String fileUrl = fileIntegration.saveFile(documentUpdateFileModel.file());
         documentEntity.setFileUrl(fileUrl);
         documentEntity = documentRepository.save(documentEntity);
 
