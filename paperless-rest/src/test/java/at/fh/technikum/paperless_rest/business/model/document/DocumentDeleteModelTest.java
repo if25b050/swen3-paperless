@@ -1,10 +1,11 @@
 package at.fh.technikum.paperless_rest.business.model.document;
 
-import at.fh.technikum.paperless_rest.business.BusinessUtil;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+
+import java.util.UUID;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
@@ -27,7 +28,7 @@ class DocumentDeleteModelTest {
     @DisplayName("Return empty string when ID is valid")
     void shouldReturnEmptyStringWhenIDIsValid(String uuid) {
         // Given
-        DocumentDeleteModel model = new DocumentDeleteModel(BusinessUtil.convertToUUID(uuid));
+        DocumentDeleteModel model = new DocumentDeleteModel(UUID.fromString(uuid));
 
         // When
         String validationResult = model.validationLogic();

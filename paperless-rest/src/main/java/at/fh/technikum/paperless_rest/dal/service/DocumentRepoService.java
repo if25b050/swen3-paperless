@@ -11,7 +11,6 @@ import at.fh.technikum.paperless_rest.dal.entity.LabelEntity;
 import at.fh.technikum.paperless_rest.dal.repository.DocumentRepository;
 import at.fh.technikum.paperless_rest.dal.repository.LabelRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
@@ -42,7 +41,6 @@ public class DocumentRepoService {
         return documentEntities.stream().map(documentMapper::toDocumentModel).toList();
     }
 
-    @Transactional
     public DocumentModel updateDocument(DocumentUpdateModel documentUpdateModel) {
         DocumentEntity documentEntity = documentRepository.findById(documentUpdateModel.uuid())
                 .orElseThrow(() -> new ObjectNotFoundException("Document with uuid: " + documentUpdateModel.uuid() + " not found."));
@@ -65,12 +63,10 @@ public class DocumentRepoService {
         return documentMapper.toDocumentModel(documentEntity);
     }
 
-    @Transactional
     public void deleteDocument(DocumentDeleteModel documentDeleteModel) {
         documentRepository.deleteById(documentDeleteModel.uuid());
     }
 
-    @Transactional
     public DocumentModel createDocument(DocumentCreateModel documentCreateModel, String fileUrl) {
         DocumentEntity documentEntity = documentMapper.toDocumentEntity(documentCreateModel, fileUrl);
 
@@ -79,7 +75,6 @@ public class DocumentRepoService {
         return documentMapper.toDocumentModel(documentEntity);
     }
 
-    @Transactional
     public DocumentModel updateDocumentFile(UUID uuid, String fileUrl) {
         DocumentEntity documentEntity = documentRepository.findById(uuid)
                 .orElseThrow(() -> new ObjectNotFoundException("Document with uuid: " + uuid + " not found."));

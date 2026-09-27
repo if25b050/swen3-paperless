@@ -25,11 +25,11 @@ public abstract class DocumentMapper {
         }
     }
 
-    public abstract DocumentUpdateModel toDocumentUpdateModel(String uuid, DocumentUpdateRequest documentUpdateRequest);
+    public abstract DocumentUpdateModel toDocumentUpdateModel(UUID uuid, DocumentUpdateRequest documentUpdateRequest);
 
-    public DocumentUpdateFileModel toDocumentUpdateFileModel(String uuid, MultipartFile multipartFile) {
+    public DocumentUpdateFileModel toDocumentUpdateFileModel(UUID uuid, MultipartFile multipartFile) {
         try {
-            return new DocumentUpdateFileModel(UUID.fromString(uuid), multipartFile.getBytes());
+            return new DocumentUpdateFileModel(uuid, multipartFile.getBytes());
         } catch (IOException e) {
             throw new ModelValidationFailedException("The file-upload failed.");
         }
