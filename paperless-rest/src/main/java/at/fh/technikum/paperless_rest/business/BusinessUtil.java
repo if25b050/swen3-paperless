@@ -17,4 +17,11 @@ public final class BusinessUtil {
             throw new InvalidUUIDException(uuid);
         }
     }
+
+    /**
+     * Function which formats a given key-value-pair for logging.
+     */
+    public static String kv(String key, Object value) {
+        return key + "=" + value;
+    }
 }

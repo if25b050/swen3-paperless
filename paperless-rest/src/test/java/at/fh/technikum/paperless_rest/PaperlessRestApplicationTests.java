@@ -49,6 +49,7 @@ class PaperlessRestApplicationTests {
     @Transactional
     @BeforeEach
     void setup() {
+        // clean up db
         documentRepository.deleteAllInBatch();
         documentRepository.flush();
         labelRepository.deleteAllInBatch();
