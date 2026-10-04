@@ -67,19 +67,9 @@ public class DocumentRepoService {
         documentRepository.deleteById(documentDeleteModel.uuid());
     }
 
-    public DocumentModel createDocument(DocumentCreateModel documentCreateModel, String fileUrl) {
-        DocumentEntity documentEntity = documentMapper.toDocumentEntity(documentCreateModel, fileUrl);
+    public DocumentModel createDocument(DocumentCreateModel documentCreateModel) {
+        DocumentEntity documentEntity = documentMapper.toDocumentEntity(documentCreateModel);
 
-        documentEntity = documentRepository.save(documentEntity);
-
-        return documentMapper.toDocumentModel(documentEntity);
-    }
-
-    public DocumentModel updateDocumentFile(UUID uuid, String fileUrl) {
-        DocumentEntity documentEntity = documentRepository.findById(uuid)
-                .orElseThrow(() -> new ObjectNotFoundException("Document with uuid: " + uuid + " not found."));
-
-        documentEntity.setFileUrl(fileUrl);
         documentEntity = documentRepository.save(documentEntity);
 
         return documentMapper.toDocumentModel(documentEntity);

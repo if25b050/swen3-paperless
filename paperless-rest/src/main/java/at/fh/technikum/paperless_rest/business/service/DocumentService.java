@@ -61,7 +61,7 @@ public class DocumentService {
         DocumentModel oldDocument = documentRepoService.getDocumentById(documentDeleteModel.uuid());
 
         // TODO Lambda fuer Rollback logik mit verteilten Transaktionen
-        fileIntegration.deleteFile(oldDocument.fileUrl());
+        fileIntegration.deleteFile(oldDocument.uuid());
 
         documentRepoService.deleteDocument(documentDeleteModel);
     }
@@ -71,10 +71,11 @@ public class DocumentService {
         log.debug("Try to create document with {}", kv("name", documentCreateModel.name()));
         ValidationModel.validate(documentCreateModel);
 
+        DocumentModel document = documentRepoService.createDocument(documentCreateModel);
         // TODO Lambda fuer Rollback logik mit verteilten Transaktionen
-        String fileUrl = fileIntegration.saveFile(documentCreateModel.file());
+        fileIntegration.saveFile(document.uuid(), documentCreateModel.file());
 
-        return documentRepoService.createDocument(documentCreateModel, fileUrl);
+        return document;
     }
 
     @Transactional
@@ -82,17 +83,18 @@ public class DocumentService {
         log.debug("Try to update document-file with {}", kv("uuid", documentUpdateFileModel.uuid()));
         ValidationModel.validate(documentUpdateFileModel);
 
-        // TODO Lambda fuer Rollback logik mit verteilten Transaktionen
-        DocumentModel oldDocument = documentRepoService.getDocumentById(documentUpdateFileModel.uuid());
-        String oldDocumentFileUrl = oldDocument.fileUrl();
+        fileIntegration.saveFile(documentUpdateFileModel.uuid(), documentUpdateFileModel.file());
 
-        String fileUrl = fileIntegration.saveFile(documentUpdateFileModel.file());
-        DocumentModel document = documentRepoService.updateDocumentFile(documentUpdateFileModel.uuid(), fileUrl);
-
-        fileIntegration.deleteFile(oldDocumentFileUrl);
-
-        return document;
+        return documentRepoService.getDocumentById(documentUpdateFileModel.uuid());
     }
+
+    public void getDocumentFile(DocumentGetFileModel documentUpdateFileModel) {
+        log.debug("Try to get document-file with {}", kv("uuid", documentUpdateFileModel.uuid()));
+        ValidationModel.validate(documentUpdateFileModel);
+
+        fileIntegration.getFile(documentUpdateFileModel.uuid(), documentUpdateFileModel.fileTarget());
+    }
+
 
     public List<DocumentModel> getDocumentsByLabel(UUID labelUuid) {
         log.debug("Try to get all document-metadata with {}", kv("labelUUID", labelUuid));
