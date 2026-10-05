@@ -23,9 +23,6 @@ public class DocumentEntity {
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false)
-    private String fileUrl;
-
     @ManyToMany(fetch = FetchType.EAGER)
     private List<LabelEntity> labels = new ArrayList<>();
 

@@ -1,6 +1,6 @@
 package at.fh.technikum.paperless_rest.dal.service;
 
-import at.fh.technikum.paperless_rest.business.exception.ObjectNotFoundException;
+import at.fh.technikum.paperless_rest.business.exception.DALObjectNotFoundException;
 import at.fh.technikum.paperless_rest.business.mapper.DocumentMapper;
 import at.fh.technikum.paperless_rest.business.model.document.DocumentCreateModel;
 import at.fh.technikum.paperless_rest.business.model.document.DocumentDeleteModel;
@@ -30,7 +30,7 @@ public class DocumentRepoService {
 
     public DocumentModel getDocumentById(UUID uuid) {
         DocumentEntity documentEntity = documentRepository.findById(uuid)
-                .orElseThrow(() -> new ObjectNotFoundException("Document with uuid: " + uuid + " not found."));
+                .orElseThrow(() -> new DALObjectNotFoundException("Document with uuid: " + uuid + " not found."));
 
         return documentMapper.toDocumentModel(documentEntity);
     }
@@ -43,7 +43,7 @@ public class DocumentRepoService {
 
     public DocumentModel updateDocument(DocumentUpdateModel documentUpdateModel) {
         DocumentEntity documentEntity = documentRepository.findById(documentUpdateModel.uuid())
-                .orElseThrow(() -> new ObjectNotFoundException("Document with uuid: " + documentUpdateModel.uuid() + " not found."));
+                .orElseThrow(() -> new DALObjectNotFoundException("Document with uuid: " + documentUpdateModel.uuid() + " not found."));
 
         documentEntity.setName(documentUpdateModel.name());
 
@@ -67,19 +67,9 @@ public class DocumentRepoService {
         documentRepository.deleteById(documentDeleteModel.uuid());
     }
 
-    public DocumentModel createDocument(DocumentCreateModel documentCreateModel, String fileUrl) {
-        DocumentEntity documentEntity = documentMapper.toDocumentEntity(documentCreateModel, fileUrl);
+    public DocumentModel createDocument(DocumentCreateModel documentCreateModel) {
+        DocumentEntity documentEntity = documentMapper.toDocumentEntity(documentCreateModel);
 
-        documentEntity = documentRepository.save(documentEntity);
-
-        return documentMapper.toDocumentModel(documentEntity);
-    }
-
-    public DocumentModel updateDocumentFile(UUID uuid, String fileUrl) {
-        DocumentEntity documentEntity = documentRepository.findById(uuid)
-                .orElseThrow(() -> new ObjectNotFoundException("Document with uuid: " + uuid + " not found."));
-
-        documentEntity.setFileUrl(fileUrl);
         documentEntity = documentRepository.save(documentEntity);
 
         return documentMapper.toDocumentModel(documentEntity);

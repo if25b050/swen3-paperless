@@ -17,37 +17,10 @@ class DocumentModelTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"", " ", "\n", "\t"})
-    @DisplayName("Return File-URL is required when File-URL is empty")
-    void returnFileURLIsRequired(String fileURL) {
-        // Given
-        DocumentModel model = new DocumentModel(UUID.randomUUID(), "Gustav", labels, fileURL);
-
-        // When
-        String validationResult = model.validationLogic();
-
-        // Then
-        assertThat(validationResult).isEqualTo("File-URL is required.");
-    }
-
-    @Test
-    @DisplayName("Return File-URL is required when File-URL is null")
-    void returnFileURLIsRequiredNull() {
-        // Given
-        DocumentModel model = new DocumentModel(UUID.randomUUID(), "Josef", labels, null);
-
-        // When
-        String validationResult = model.validationLogic();
-
-        // Then
-        assertThat(validationResult).isEqualTo("File-URL is required.");
-    }
-
-    @ParameterizedTest
-    @ValueSource(strings = {"", " ", "\n", "\t"})
     @DisplayName("Return Name is required when name is empty")
     void returnNameIsRequired(String name) {
         // Given
-        DocumentModel model = new DocumentModel(UUID.randomUUID(), name, labels, "fileURL");
+        DocumentModel model = new DocumentModel(UUID.randomUUID(), name, labels);
 
         // When
         String validationResult = model.validationLogic();
@@ -60,7 +33,7 @@ class DocumentModelTest {
     @DisplayName("Return name is required when name is null")
     void returnNameIsRequiredNull() {
         // Given
-        DocumentModel model = new DocumentModel(UUID.randomUUID(), null, labels, "fileURL");
+        DocumentModel model = new DocumentModel(UUID.randomUUID(), null, labels);
 
         // When
         String validationResult = model.validationLogic();
@@ -73,7 +46,7 @@ class DocumentModelTest {
     @DisplayName("Return empty string when everything is valid")
     void returnEmptyStringWhenEverythingIsValid() {
         // Given
-        DocumentModel model = new DocumentModel(UUID.randomUUID(), "Josef", labels, "fileURL");
+        DocumentModel model = new DocumentModel(UUID.randomUUID(), "Josef", labels);
 
         // Then
         String validationResult = model.validationLogic();

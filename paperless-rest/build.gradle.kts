@@ -40,6 +40,7 @@ dependencies {
 	testAnnotationProcessor("org.projectlombok:lombok")
 	implementation("org.mapstruct:mapstruct:1.6.2")
 	annotationProcessor("org.mapstruct:mapstruct-processor:1.6.2")
+	implementation("software.amazon.awssdk:s3:2.55.11")
 
 }
 

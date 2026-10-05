@@ -3,6 +3,7 @@ package at.fh.technikum.paperless_rest;
 import at.fh.technikum.paperless_rest.api.dto.request.DocumentUpdateRequest;
 import at.fh.technikum.paperless_rest.api.dto.response.DocumentResponse;
 import at.fh.technikum.paperless_rest.api.dto.response.LabelResponse;
+import at.fh.technikum.paperless_rest.business.integration.FileIntegration;
 import at.fh.technikum.paperless_rest.business.model.document.DocumentCreateModel;
 import at.fh.technikum.paperless_rest.dal.repository.DocumentRepository;
 import at.fh.technikum.paperless_rest.dal.repository.LabelRepository;
@@ -14,6 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import tools.jackson.databind.ObjectMapper;
@@ -32,6 +34,9 @@ class PaperlessRestApplicationTests {
     private MockMvc mvc;
     @Autowired
     private ObjectMapper objectMapper;
+
+    @MockitoBean
+    private FileIntegration fileIntegration; // Mock the file-integration for testing
 
     @Autowired
     private DocumentRepository documentRepository;
@@ -66,7 +71,6 @@ class PaperlessRestApplicationTests {
                 .andExpectAll(
                         jsonPath("$.name").value(createResponse.name()),
                         jsonPath("$.uuid").value(createResponse.uuid()),
-                        jsonPath("$.fileUrl").value(createResponse.fileUrl()),
                         jsonPath("$.labels").value(createResponse.labels())
                 );
         // TODO Test file content
@@ -84,10 +88,7 @@ class PaperlessRestApplicationTests {
         // Test update file
         mvc.perform(multipart("/api/v1/documents/{0}/file", createResponse.uuid())
                         .file("file", "This is new File Content!".getBytes(StandardCharsets.UTF_8)))
-                .andExpect(status().isOk())
-                .andExpect(
-                        jsonPath("$.fileUrl").value(not(createResponse.fileUrl()))
-                );
+                .andExpect(status().isOk());
 
         // Test invalid file upload
         mvc.perform(multipart("/api/v1/documents/{0}/file", createResponse.uuid())
@@ -187,7 +188,6 @@ class PaperlessRestApplicationTests {
                 .andExpectAll(
                         jsonPath("$.name").value(documentCreateModel.name()),
                         jsonPath("$.uuid").isNotEmpty(),
-                        jsonPath("$.fileUrl").isNotEmpty(),
                         jsonPath("$.labels").isArray()
                 )
                 .andReturn();
