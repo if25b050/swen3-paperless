@@ -64,12 +64,12 @@ public class DocumentController {
         return documentMapper.toDocumentResponse(documentModel);
     }
 
-    @GetMapping(path = "/{uuid}/file", produces = "application/octet-stream")
+    @GetMapping(path = "/{uuid}/file", produces = "application/pdf")
     public void getDocumentFile(@PathVariable UUID uuid, HttpServletResponse response) {
         try {
             DocumentGetFileModel documentGetFileModel = documentMapper.toDocumentGetFileModel(uuid, response.getOutputStream());
+            response.setContentType("application/pdf");
             documentService.getDocumentFile(documentGetFileModel);
-
             response.flushBuffer();
         } catch (IOException e) {
             log.error("There was an error when streaming the document-file with {}", kv("uuid", uuid), e);

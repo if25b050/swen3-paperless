@@ -70,6 +70,7 @@ public class DocumentService {
     public DocumentModel createDocument(DocumentCreateModel documentCreateModel) {
         log.debug("Try to create document with {}", kv("name", documentCreateModel.name()));
         ValidationModel.validate(documentCreateModel);
+        // TODO Prevent non PDF-Files?
 
         DocumentModel document = documentRepoService.createDocument(documentCreateModel);
         // TODO Lambda fuer Rollback logik mit verteilten Transaktionen

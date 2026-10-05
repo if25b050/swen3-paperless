@@ -1,5 +1,6 @@
 package at.fh.technikum.paperless_rest.business.integration;
 
+import at.fh.technikum.paperless_rest.business.exception.S3ObjectNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -73,6 +74,9 @@ public class FileIntegrationImpl implements FileIntegration {
         } catch (IOException e) {
             log.error("The file download behind {} failed", documentId);
             throw new RuntimeException("Document download failed!");
+        } catch (NoSuchKeyException ex) {
+            log.warn(ex.getMessage());
+            throw new S3ObjectNotFoundException("Document-File \"" + documentId + "\" not found!");
         }
     }
 

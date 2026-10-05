@@ -1,8 +1,9 @@
 package at.fh.technikum.paperless_rest.api.controller;
 
+import at.fh.technikum.paperless_rest.business.exception.DALObjectNotFoundException;
 import at.fh.technikum.paperless_rest.business.exception.InvalidUUIDException;
 import at.fh.technikum.paperless_rest.business.exception.ModelValidationFailedException;
-import at.fh.technikum.paperless_rest.business.exception.ObjectNotFoundException;
+import at.fh.technikum.paperless_rest.business.exception.S3ObjectNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -28,14 +29,20 @@ public class GlobalControllerExceptionHandler {
     }
 
     @ExceptionHandler(InvalidUUIDException.class)
-    public ProblemDetail handleInvalidUUID(ObjectNotFoundException ex) {
+    public ProblemDetail handleInvalidUUID(DALObjectNotFoundException ex) {
         log.warn(ex.getMessage(), ex);
         return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
-    @ExceptionHandler(ObjectNotFoundException.class)
-    public ProblemDetail handleNotFound(ObjectNotFoundException ex) {
-        log.warn(ex.getMessage(), ex);
+    @ExceptionHandler(DALObjectNotFoundException.class)
+    public ProblemDetail handleNotFound(DALObjectNotFoundException ex) {
+        log.warn(ex.getMessage());
+        return ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
+    }
+
+    @ExceptionHandler(S3ObjectNotFoundException.class)
+    public ProblemDetail handleNotFound(S3ObjectNotFoundException ex) {
+        log.warn(ex.getMessage());
         return ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
     }
 

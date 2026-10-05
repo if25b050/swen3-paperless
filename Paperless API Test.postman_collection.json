@@ -1,0 +1,241 @@
+{
+  "info": {
+    "_postman_id": "fe1e4d60-9666-4547-b6b3-08d02b1559bc",
+    "name": "Paperless API Test",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "48837874",
+    "_collection_link": "https://go.postman.co/collection/48837874-fe1e4d60-9666-4547-b6b3-08d02b1559bc?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Create Document",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const response = pm.response.json();",
+              "const uuid = response.uuid;",
+              "const filename = response.name;",
+              "",
+              "pm.collectionVariables.set(\"document_uuid\", uuid);",
+              "",
+              "pm.test(\"Response has uuid and name\", function () {",
+              "    pm.expect(uuid).to.be.a(\"string\").and.not.empty;",
+              "    pm.expect(filename).to.be.a(\"string\").and.not.empty;",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "packages": {},
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "file",
+              "type": "file",
+              "uuid": "7ab28034-83d9-4536-85c5-454f9aa44f3a",
+              "src": "postman-cloud:///1f1c083c-d50f-4640-9999-959561329ccd"
+            }
+          ]
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/v1/documents",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "v1",
+            "documents"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get Document",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const response = pm.response.json();\r",
+              "\r",
+              "pm.test(\"Response has uuid and name\", function () {\r",
+              "    pm.expect(response.uuid).to.be.a(\"string\").and.not.empty;\r",
+              "    pm.expect(response.name).to.be.a(\"string\").and.not.empty;\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/v1/documents/{{document_uuid}}",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "v1",
+            "documents",
+            "{{document_uuid}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get Document File",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "// Compare the GET response PDF with the hash stored from the POST (Create Document) request\r",
+              "pm.test(\"Response content type is PDF\", function () {\r",
+              "    pm.response.to.have.header(\"Content-Type\");\r",
+              "    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/pdf\");\r",
+              "});\r",
+              "\r",
+              "pm.test(\"response has file\", function () {\r",
+              "    const rawStream = pm.response.stream;\r",
+              "    const uint8Array = new Uint8Array(rawStream);\r",
+              "    pm.expect(uint8Array.length).to.be.above(0);\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/v1/documents/{{document_uuid}}/file",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "v1",
+            "documents",
+            "{{document_uuid}}",
+            "file"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Delete Document",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200 Ok\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/v1/documents/{{document_uuid}}",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "v1",
+            "documents",
+            "{{document_uuid}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get Document Missing",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 404 Not Found\", function () {\r",
+              "    pm.response.to.have.status(404);\r",
+              "});\r",
+              "\r",
+              "\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/v1/documents/{{document_uuid}}",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "v1",
+            "documents",
+            "{{document_uuid}}"
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "document_uuid",
+      "value": ""
+    }
+  ]
+}
