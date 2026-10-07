@@ -8,7 +8,7 @@
         #fileInput
         accept="application/pdf"
         style="display: none;"
-        (change)="onFileSelected($event)"
+        (change)="onFileUpload($event)"
       />
 
       <button class="circle-btn" (click)="fileInput.click()">Upload PDF</button>
@@ -23,11 +23,11 @@
     <div class="column-text">
       <h3>Hochgeladene PDFs:</h3>
 
-      @if (uploadedFiles.length === 0) {
+      @if (currentFiles.length === 0) {
         <p class="empty-msg">Keine PDFs ausgewählt</p>
       } @else {
         <ul class="file-list">
-          @for (fileItem of uploadedFiles; track fileItem.file.name) {
+          @for (fileItem of currentFiles; track fileItem.file.name) {
             <li
               [class.active]="selectedFile === fileItem"
               (click)="selectFile(fileItem)"

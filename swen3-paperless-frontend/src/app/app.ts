@@ -3,6 +3,10 @@ import {DomSanitizer} from '@angular/platform-browser';
 import * as pdfjsLib from 'pdfjs-dist'
 import {PdfItem} from './dto/pdf-item';
 import {SearchResult} from './dto/search-result';
+import {DocumentService} from './service/document.service';
+import {LabelService} from './service/label.service';
+import {SearchService} from './service/search.service';
+import {Router} from '@angular/router';
 
 
 @Component({
@@ -14,14 +18,18 @@ import {SearchResult} from './dto/search-result';
 export class AppComponent {
   private sanitizer = inject(DomSanitizer);
   private cdr = inject(ChangeDetectorRef);
+  private documentService = inject(DocumentService);
+  private labelService = inject(LabelService);
+  private searchService = inject(SearchService);
+  private router = inject(Router);
 
-  uploadedFiles: PdfItem[] = [];
+  currentFiles: PdfItem[] = [];
   selectedFile: PdfItem | null = null;
 
   searchQuery = '';
   searchResults: SearchResult[] = [];
 
-  async onFileSelected(event: Event): Promise<void> {
+  onFileUpload(event: Event) {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
       const file = input.files[0];
@@ -29,37 +37,18 @@ export class AppComponent {
       // Überprüfung, ob es sich wirklich um eine PDF-Datei handelt
       if (file.type !== 'application/pdf') {
         alert('Bitte nur PDF-Dateien hochladen!');
-        input.value='';
-        return;
-      }
-
-      // Duplikatsprüfung anhand des Dateinamens
-      const isDuplicate = this.uploadedFiles.some(
-        item => item.file.name === file.name
-      );
-
-      if(isDuplicate) {
-        alert(`Die Datei "${file.name}" wurde bereits hochgeladen!`);
         input.value = '';
         return;
       }
 
-      // Text aus PDF extrahieren
-      const extractedText = await this.extractTextFromPdf(file);
+      this.documentService.createDocument(file).subscribe(document => {
+        // Automatisch die neu hochgeladene Datei auswählen
+        this.selectFile(document.uuid);
 
-      // Erstelle eine Vorschau-URL für die lokale Datei
-      const objectUrl = URL.createObjectURL(file);
-      const safeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(`${objectUrl}#view=Fit`);
-      const newItem: PdfItem = {file, safeUrl, extractedText};
-      this.uploadedFiles.push(newItem);
-
-      // Automatisch die neu hochgeladene Datei auswählen
-      this.selectFile(newItem)
-
-      // Input zurücksetzen, damit dieselbe Datei erneut gewählt werden kann
-      input.value = '';
-
-      this.cdr.detectChanges();
+        // Input zurücksetzen, damit dieselbe Datei erneut gewählt werden kann
+        input.value = '';
+        this.cdr.detectChanges();
+      });
     }
   }
 
@@ -70,14 +59,15 @@ export class AppComponent {
       const pdf = await pdfjsLib.getDocument({data: arrayBuffer}).promise;
       let fullText = '';
 
-      for(let i = 1; i <= pdf.numPages; i++) {
+      for (let i = 1; i <= pdf.numPages; i++) {
         const page = await pdf.getPage(i);
         const textContent = await page.getTextContent();
-        const pageText = textContent.items.map((item: any) => item.str || '').join(' ');        fullText += pageText + ' ';
+        const pageText = textContent.items.map((item: any) => item.str || '').join(' ');
+        fullText += pageText + ' ';
       }
 
       return fullText;
-    } catch(e) {
+    } catch (e) {
       console.error('Fehler beim Extrahieren des PDF-Textes:', e);
       return '';
     }
@@ -88,19 +78,19 @@ export class AppComponent {
     const query = (event.target as HTMLInputElement).value;
     this.searchQuery = query;
 
-    if(!query.trim()) {
+    if (!query.trim()) {
       this.searchResults = [];
       return;
     }
 
     const term = query.toLowerCase();
-    const results: SearchResult[] =[];
+    const results: SearchResult[] = [];
 
-    this.uploadedFiles.forEach(fileItem => {
+    this.currentFiles.forEach(fileItem => {
       // Suche in Dateinamen
-      if(fileItem.file.name.toLowerCase().includes(term)) {
+      if (fileItem.file.name.toLowerCase().includes(term)) {
         results.push({
-          id: fileItem.file.name+'-name',
+          id: fileItem.file.name + '-name',
           type: 'filename',
           fileItem
         });
@@ -108,10 +98,10 @@ export class AppComponent {
 
       // Suche im Inhalt der PDF
       const contentIndex = fileItem.extractedText.toLowerCase().indexOf(term);
-      if(contentIndex !== -1) {
+      if (contentIndex !== -1) {
         // Erstelle Snippet um den Suchbegriff
         const start = Math.max(0, contentIndex - 30);
-        const end = Math.min(fileItem.extractedText.length, contentIndex + term.length+30)
+        const end = Math.min(fileItem.extractedText.length, contentIndex + term.length + 30)
         const snippet = fileItem.extractedText.substring(start, end);
 
         results.push({
@@ -127,10 +117,10 @@ export class AppComponent {
   }
 
   // Öffnet das PDF und übergibt den Parameter für die Textmarkierung
-  openSearchResult(result: SearchResult): void{
+  openSearchResult(result: SearchResult): void {
     const rawUrl = URL.createObjectURL(result.fileItem.file);
 
-    if(result.type === 'filename') {
+    if (result.type === 'filename') {
       const fullViewerUrl = `${rawUrl}#view=FitH`;
       result.fileItem.safeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(fullViewerUrl);
     } else {
@@ -139,19 +129,19 @@ export class AppComponent {
       result.fileItem.safeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(searchUrl);
     }
 
-    this.selectFile(result.fileItem);
+    this.selectFile(result.id);
     this.searchResults = []; // Dropdown schließen
   }
 
-  selectFile(fileItem: PdfItem): void {
-    this.selectedFile = fileItem;
+  selectFile(newUuid: string): void {
+    this.router.navigate([newUuid]);
   }
 
   deleteSelectedFile(): void {
     if (!this.selectedFile) return;
 
     // Aus Liste entfernen
-    this.uploadedFiles = this.uploadedFiles.filter(item => item !== this.selectedFile)
+    this.currentFiles = this.currentFiles.filter(item => item !== this.selectedFile)
 
     // Ausgewählte Datei zurücksetzen
     this.selectedFile = null;
