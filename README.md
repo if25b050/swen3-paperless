@@ -20,7 +20,7 @@ parts of, or the whole application.
 The project contains the core backend paperless-rest, which provides the various functions to the frontend application
 and uses a postgres-DB for saving metadata.
 
-TODO Paperless-rest further uses RustFS to save the files.
+Paperless-rest further uses RustFS to save the files.
 
 TODO Worker-Architecture with a message queue is used to implement OCR- and GenAI-Features.
 

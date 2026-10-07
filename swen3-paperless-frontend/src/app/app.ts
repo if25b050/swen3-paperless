@@ -1,22 +1,9 @@
-import { ChangeDetectorRef, Component, inject } from '@angular/core';
-import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import {ChangeDetectorRef, Component, inject} from '@angular/core';
+import {DomSanitizer} from '@angular/platform-browser';
 import * as pdfjsLib from 'pdfjs-dist'
+import {PdfItem} from './dto/pdf-item';
+import {SearchResult} from './dto/search-result';
 
-// Worker für PDF.js definieren
-pdfjsLib.GlobalWorkerOptions.workerSrc = 'assets/pdf.worker.min.mjs';
-
-export interface PdfItem {
-  file: File;
-  safeUrl: SafeResourceUrl;
-  extractedText: string; // Speichert Text dem PDF
-}
-
-export interface SearchResult {
-  id: string;
-  type: 'filename' | 'content';
-  fileItem: PdfItem;
-  snippet?: string;
-}
 
 @Component({
   selector: 'app-root',
