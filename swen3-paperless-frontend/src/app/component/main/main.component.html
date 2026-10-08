@@ -1,0 +1,98 @@
+<div class="app-layout">
+
+  <!-- Linke Spalte -->
+  <aside class="column left-column">
+    <div class="button-group">
+      <input
+        type="file"
+        #fileInput
+        accept="application/pdf"
+        style="display: none;"
+        (change)="onFileUpload($event)"
+      />
+
+      <button class="circle-btn" (click)="fileInput.click()">Upload PDF</button>
+      <button
+        class="circle-btn"
+        [disabled]="!selectedFile()"
+        (click)="deleteSelectedFile()">
+        Delete PDF
+      </button>
+      <button
+        class="circle-btn"
+        (click)="selectedFile.set(null)"
+        [disabled]="!selectedFile()">
+        Clear Selection
+      </button>
+    </div>
+
+    <div class="column-text">
+      <h3>Hochgeladene PDFs:</h3>
+
+      @if (currentFiles().length === 0) {
+        <p class="empty-msg">Keine PDFs vorhanden</p>
+      } @else {
+        <ul class="file-list">
+          @for (fileItem of currentFiles(); track fileItem.uuid) {
+            <li
+              [class.active]="selectedFile()?.uuid === fileItem.uuid"
+              (click)="selectFile(fileItem)"
+            >
+              🥸 {{ fileItem.name }}
+            </li>
+          }
+        </ul>
+      }
+    </div>
+  </aside>
+
+  <!-- Mittlere Spalte (pdf view) -->
+  <div class="center-content">
+    <div class="search-bar-container">
+      <input
+        type="text"
+        class="search-input"
+        placeholder="In PDFs suchen..."
+        (input)="onSearchInput($event)"
+        [value]="searchQuery"
+      />
+
+      <!-- Suchergebnisse Dropdown mit korrekten Klassen -->
+      @if (searchResults.length > 0) {
+        <ul class="search-results-dropdown">
+          @for (result of searchResults; track result.document.uuid) {
+            <li
+              (click)="selectFile(result.document); searchQuery='';"
+              [class.result-item-filename]="result.type === 'filename'"
+              [class.result-item-content]="result.type === 'content'">
+
+              <div class="result-header">
+                <span class="result-title">📄 {{ result.document.name }}</span>
+                <span
+                  class="result-badge"
+                  [class.badge-filename]="result.type === 'filename'"
+                  [class.badge-content]="result.type === 'content'">
+                  {{ result.type === 'filename' ? 'Titel' : 'Inhalt' }}
+                </span>
+              </div>
+
+              @if (result.type === 'content' && result.snippet) {
+                <div class="result-snippet">
+                  ...{{ result.snippet }}...
+                </div>
+              }
+            </li>
+          }
+        </ul>
+      }
+    </div>
+
+
+    <app-pdf [pdf]="selectedFile()"></app-pdf>
+  </div>
+
+  <!-- Rechte Spalte -->
+  <aside class="column right-column">
+    <p>Später bearbeiten.</p>
+  </aside>
+</div>

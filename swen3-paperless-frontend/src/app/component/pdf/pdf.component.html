@@ -1,0 +1,13 @@
+<div class="viewer-wrapper">
+  @if (pdfUrl) {
+    <iframe
+      [src]="pdfUrl"
+      class="pdf-viewer"
+      type="application/pdf">
+    </iframe>
+  } @else {
+    <div class="placeholder">
+      Keine PDF-Datei ausgewählt.
+    </div>
+  }
+</div>
