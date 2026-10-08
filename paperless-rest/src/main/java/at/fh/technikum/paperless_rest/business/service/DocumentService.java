@@ -108,8 +108,13 @@ public class DocumentService {
                 kv("search", searchModel.search()), kv("page", searchModel.page()),
                 kv("pageSize", searchModel.pageSize()));
         ValidationModel.validate(searchModel);
-        // TODO Implement stuff
+        // TODO Implement real stuff
 
-        return new DocumentSearchResultModel(List.of(), new SearchPagingModel(0, 0));
+        List<DocumentModel> allDocuments = documentRepoService.getAllDocuments();
+        List<DocumentModel> filteredList = allDocuments.stream()
+                .filter(d -> d.name().contains(searchModel.search()))
+                .toList();
+
+        return new DocumentSearchResultModel(filteredList, new SearchPagingModel(0, 0));
     }
 }

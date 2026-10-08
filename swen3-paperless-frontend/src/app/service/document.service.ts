@@ -1,8 +1,9 @@
 import {inject, Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs';
-import {DocumentResponse} from '../dto/response/DocumentResponse';
+import {DocumentResponse} from '../dto/response/document-response';
 import {DocumentUpdateRequest} from '../dto/request/DocumentUpdateRequest';
+import {environment} from '../environment';
 
 @Injectable({
   providedIn: 'root',
@@ -31,6 +32,12 @@ export class DocumentService {
 
   public getDocumentFile(uuid: string): Observable<ArrayBuffer> {
     return this.http.get(`${environment.baseApiUrl}/documents/${uuid}/file`, {responseType: 'arraybuffer'});
+  }
+
+  public updateDocumentFile(uuid: string, document: File): Observable<void> {
+    let formData = new FormData();
+    formData.append('file', document);
+    return this.http.post<void>(`${environment.baseApiUrl}/documents/${uuid}/file`, formData)
   }
 
   public deleteDocument(uuid: string): Observable<void> {

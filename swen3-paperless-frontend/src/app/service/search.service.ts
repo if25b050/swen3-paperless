@@ -1,7 +1,9 @@
 import {inject, Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {SearchPagingResponse} from '../dto/response/SearchPagingResponse';
 import {Observable} from 'rxjs';
+import {DocumentSearchRequest} from '../dto/request/DocumentSearchRequest';
+import {DocumentSearchResponse} from '../dto/response/document-search-response';
+import {environment} from '../environment';
 
 @Injectable({
   providedIn: 'root',
@@ -9,7 +11,7 @@ import {Observable} from 'rxjs';
 export class SearchService {
   private http = inject(HttpClient);
 
-  public searchDocuments(searchRequest: any): Observable<SearchPagingResponse> {
-    return this.http.post<SearchPagingResponse>(`${environment.baseApiUrl}/search`, searchRequest);
+  public searchDocuments(searchRequest: DocumentSearchRequest): Observable<DocumentSearchResponse> {
+    return this.http.post<DocumentSearchResponse>(`${environment.baseApiUrl}/search`, searchRequest);
   }
 }

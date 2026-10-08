@@ -1,3 +1,3 @@
-const environment = {
+export const environment = {
   baseApiUrl: '/api/v1',
 }

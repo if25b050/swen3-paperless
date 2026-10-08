@@ -9,6 +9,7 @@ import at.fh.technikum.paperless_rest.business.service.DocumentService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -29,7 +30,7 @@ public class SearchController {
     }
 
     @PostMapping
-    public DocumentSearchResponse searchDocuments(DocumentSearchRequest searchRequest) {
+    public DocumentSearchResponse searchDocuments(@RequestBody DocumentSearchRequest searchRequest) {
         DocumentSearchModel searchModel = searchMapper.toModel(searchRequest);
 
         DocumentSearchResultModel documentSearchResultModel = documentService.searchDocuments(searchModel);

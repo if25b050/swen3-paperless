@@ -1,8 +1,7 @@
-import {PdfItem} from './pdf-item';
+import {DocumentResponse} from './response/document-response';
 
 export interface SearchResult {
-  id: string;
+  document: DocumentResponse;
   type: 'filename' | 'content';
-  fileItem: PdfItem;
   snippet?: string;
 }

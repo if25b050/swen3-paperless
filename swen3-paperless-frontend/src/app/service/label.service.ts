@@ -1,8 +1,9 @@
 import {inject, Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs';
-import {LabelResponse} from '../dto/response/LabelResponse';
-import {DocumentResponse} from '../dto/response/DocumentResponse';
+import {LabelResponse} from '../dto/response/label-response';
+import {DocumentResponse} from '../dto/response/document-response';
+import {environment} from '../environment';
 
 @Injectable({
   providedIn: 'root',
