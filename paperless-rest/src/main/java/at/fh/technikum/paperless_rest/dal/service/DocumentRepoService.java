@@ -10,6 +10,7 @@ import at.fh.technikum.paperless_rest.dal.entity.DocumentEntity;
 import at.fh.technikum.paperless_rest.dal.entity.LabelEntity;
 import at.fh.technikum.paperless_rest.dal.repository.DocumentRepository;
 import at.fh.technikum.paperless_rest.dal.repository.LabelRepository;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -64,7 +65,11 @@ public class DocumentRepoService {
     }
 
     public void deleteDocument(DocumentDeleteModel documentDeleteModel) {
-        documentRepository.deleteById(documentDeleteModel.uuid());
+        try {
+            documentRepository.deleteById(documentDeleteModel.uuid());
+        } catch (OptimisticLockingFailureException ex) {
+            throw new DALObjectNotFoundException(ex.getMessage());
+        }
     }
 
     public DocumentModel createDocument(DocumentCreateModel documentCreateModel) {

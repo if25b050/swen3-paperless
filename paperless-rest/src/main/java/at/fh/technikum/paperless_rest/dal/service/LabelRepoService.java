@@ -8,6 +8,7 @@ import at.fh.technikum.paperless_rest.business.model.label.LabelModel;
 import at.fh.technikum.paperless_rest.business.model.label.LabelUpdateModel;
 import at.fh.technikum.paperless_rest.dal.entity.LabelEntity;
 import at.fh.technikum.paperless_rest.dal.repository.LabelRepository;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -56,7 +57,11 @@ public class LabelRepoService {
 
 
     public void deleteLabel(LabelDeleteModel labelDeleteModel) {
-        labelRepository.deleteById(labelDeleteModel.uuid());
+        try {
+            labelRepository.deleteById(labelDeleteModel.uuid());
+        } catch (OptimisticLockingFailureException ex) {
+            throw new DALObjectNotFoundException(ex.getMessage());
+        }
     }
 
 }
