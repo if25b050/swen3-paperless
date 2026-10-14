@@ -32,15 +32,15 @@ services:
       S3_URL: "http://rustfs:9000"
     ports:
       - "8080:8080"
-  #  frontend:
-  #    profiles:
-  #      - frontend
-  #      - full
-  #    build:
-  #      context: PaperlessFrontend
-  #      dockerfile: frontend.Dockerfile
-  #    ports:
-  #      - "4200:8080"
+  frontend:
+    profiles:
+      - frontend
+      - full
+    build:
+      context: swen3-paperless-frontend
+      dockerfile: frontend.Dockerfile
+    ports:
+      - "4200:8080"
   rustfs:
     image: rustfs/rustfs:1.0.1
     depends_on:
