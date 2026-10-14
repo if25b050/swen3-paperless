@@ -1,5 +1,7 @@
 package at.fh.technikum.paperless_rest.business.service;
 
+import at.fh.technikum.paperless_rest.business.exception.DALObjectNotFoundException;
+import at.fh.technikum.paperless_rest.business.exception.S3ObjectNotFoundException;
 import at.fh.technikum.paperless_rest.business.integration.FileIntegration;
 import at.fh.technikum.paperless_rest.business.integration.SearchIntegration;
 import at.fh.technikum.paperless_rest.business.model.ValidationModel;
@@ -58,12 +60,17 @@ public class DocumentService {
         log.debug("Try to delete document with {}", kv("uuid", documentDeleteModel.uuid()));
 
         ValidationModel.validate(documentDeleteModel);
-        DocumentModel oldDocument = documentRepoService.getDocumentById(documentDeleteModel.uuid());
 
-        // TODO Lambda fuer Rollback logik mit verteilten Transaktionen
-        fileIntegration.deleteFile(oldDocument.uuid());
+        try {
+            DocumentModel oldDocument = documentRepoService.getDocumentById(documentDeleteModel.uuid());
 
-        documentRepoService.deleteDocument(documentDeleteModel);
+            // TODO Lambda fuer Rollback logik mit verteilten Transaktionen
+            fileIntegration.deleteFile(oldDocument.uuid());
+
+            documentRepoService.deleteDocument(documentDeleteModel);
+        } catch (S3ObjectNotFoundException | DALObjectNotFoundException ex) {
+            log.info("Document with {} was tried to be deleted, but was missing.", kv("uuid", documentDeleteModel.uuid()), ex);
+        }
     }
 
     @Transactional
