@@ -11,6 +11,10 @@ import {FormsModule} from '@angular/forms';
 import {LabelOption} from '../../dto/label-option';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {MatDialog} from '@angular/material/dialog';
+import {EditDocumentDialog} from '../edit-document/edit-document.dialog';
+import {EditDocumentDialogData} from '../edit-document/edit-document-dialog-data';
+import {MatIconButton} from '@angular/material/button';
+import {MatIcon} from '@angular/material/icon';
 
 
 @Component({
@@ -18,7 +22,9 @@ import {MatDialog} from '@angular/material/dialog';
   imports: [
     PdfComponent,
     FormsModule,
-    CommonModule
+    CommonModule,
+    MatIconButton,
+    MatIcon
   ],
   templateUrl: './main.component.html',
   styleUrl: './main.component.scss',
@@ -357,6 +363,17 @@ export class MainComponent implements OnInit {
 
     this.router.navigate(['pdf', document.uuid]);
     this.cdr.detectChanges();
+  }
+
+  editDocument(document: DocumentResponse | null): void {
+    if (!document) return;
+    this.dialog.open<EditDocumentDialog, EditDocumentDialogData, DocumentResponse>(EditDocumentDialog, {data: document}).afterClosed().subscribe(result => {
+      if (result) {
+        document.name = result.name;
+        this.cdr.detectChanges();
+        this.snackbar.open("Dokument wurde geupdatet.", "OK", {duration: 2500});
+      }
+    });
   }
 
   deleteSelectedFile(): void {

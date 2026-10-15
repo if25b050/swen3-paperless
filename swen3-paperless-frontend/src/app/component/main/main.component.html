@@ -12,19 +12,19 @@
       />
 
       <button class="circle-btn" (click)="fileInput.click()">
-        {{ selectedFile() ? "Update PDF" : "Upload PDF" }}
+        {{ selectedFile() ? "PDF ändern" : "PDF hochladen" }}
       </button>
       <button
         class="circle-btn"
         [disabled]="!selectedFile()"
         (click)="deleteSelectedFile()">
-        Delete PDF
+        PDF löschen
       </button>
       <button
         class="circle-btn"
         (click)="selectedFile.set(null)"
         [disabled]="!selectedFile()">
-        Clear Selection
+        Auswahl entfernen
       </button>
     </div>
 
@@ -40,7 +40,14 @@
               [class.active]="selectedFile()?.uuid === fileItem.uuid"
               (click)="selectFile(fileItem)"
             >
-              🥸 {{ fileItem.name }}
+              <div>🥸 {{ fileItem.name }}</div>
+              <button
+                mat-icon-button
+                (click)="editDocument(fileItem); $event.stopImmediatePropagation()"
+                title="Dokument ändern">
+                <mat-icon>edit</mat-icon>
+              </button>
+
             </li>
           }
         </ul>

@@ -1,0 +1,19 @@
+<h2 mat-dialog-title>Dokument ändern</h2>
+<div mat-dialog-content>
+  <mat-form-field>
+    <mat-label>Name</mat-label>
+    <input #nameInput="ngModel" matInput [(ngModel)]="name" pattern="^[\w,\s-]+$" required>
+    <span matTextSuffix>.pdf</span>
+    @if (nameInput.hasError('required')) {
+      <mat-error>Name wird benötigt</mat-error>
+    }
+
+    @if (nameInput.hasError('pattern')) {
+      <mat-error>Der Name enthält invalide Werte</mat-error>
+    }
+  </mat-form-field>
+</div>
+<div mat-dialog-actions>
+  <button matButton [disabled]="nameInput.invalid" (click)="save()">Speichern</button>
+  <button matButton [mat-dialog-close]="false">Abbrechen</button>
+</div>

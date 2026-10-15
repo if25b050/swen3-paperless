@@ -90,8 +90,19 @@
       margin-bottom: 4px;
       transition: background-color 0.2s;
       white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+
+      > div {
+        width: 170px;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        display: inline-block;
+      }
+
+      > button > mat-icon {
+        width: 20px;
+        height: 20px;
+        font-size: 20px;
+      }
 
       &:hover {
         background-color: #e5e7eb;
