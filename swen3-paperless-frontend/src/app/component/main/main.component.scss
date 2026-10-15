@@ -115,14 +115,31 @@
   background-color: #f3f4f6;
   overflow: hidden;
 
-  /* Suchleiste oberhalb des PDFs */
-  .search-bar-container {
+  /* Wrapper für beide Suchleisten zur Layer-Kontrolle */
+  .search-bars-wrapper {
+    display: flex;
+    flex-direction: column;
     flex-shrink: 0;
+    position: relative;
+    z-index: 20;
+  }
+
+  /* Suchleisten oberhalb des PDFs */
+  .search-bar-container {
     position: relative;
     padding: 15px 20px;
     background-color: #ffffff;
     border-bottom: 1px solid #e5e7eb;
-    z-index: 20;
+
+    /* Erste Suchleiste (Volltext) liegt immer über der zweiten */
+    &:first-of-type {
+      z-index: 30;
+    }
+
+    /* Zweite Suchleiste (Labels) liegt darunter */
+    &:last-of-type {
+      z-index: 20;
+    }
 
     .search-input {
       width: 100%;
@@ -157,6 +174,7 @@
       display: flex;
       flex-direction: column;
       gap: 6px;
+      z-index: 100;
 
       li {
         padding: 10px 12px;

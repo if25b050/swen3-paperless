@@ -47,15 +47,16 @@ public class DocumentRepoService {
 
         documentEntity.setName(documentUpdateModel.name());
 
-        for (String label : documentUpdateModel.labels()) {
-            LabelEntity labelEntity = labelRepository.findByName(label).orElse(null);
-            if (labelEntity == null) {
-                // Create the label if it is missing
-                labelEntity = new LabelEntity();
-                labelEntity.setName(label);
-                labelEntity = labelRepository.save(labelEntity);
-            }
-            documentEntity.getLabels().add(labelEntity);
+        documentEntity.getLabels().clear();
+
+        if (documentUpdateModel.labels() != null && !documentUpdateModel.labels().isEmpty()) {
+            List<UUID> labelUuids = documentUpdateModel.labels().stream()
+                    .map(UUID::fromString)
+                    .toList();
+
+            // 3. Alle Labels auf einmal über das Repository laden und zuweisen
+            List<LabelEntity> foundLabels = labelRepository.findAllById(labelUuids);
+            documentEntity.getLabels().addAll(foundLabels);
         }
 
         documentEntity = documentRepository.save(documentEntity);
