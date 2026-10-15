@@ -11,18 +11,20 @@
         (change)="onFileUpload($event)"
       />
 
-      <button class="circle-btn" (click)="fileInput.click()">Upload PDF</button>
+      <button class="circle-btn" (click)="fileInput.click()">
+        {{ selectedFile() ? "PDF ändern" : "PDF hochladen" }}
+      </button>
       <button
         class="circle-btn"
         [disabled]="!selectedFile()"
         (click)="deleteSelectedFile()">
-        Delete PDF
+        PDF löschen
       </button>
       <button
         class="circle-btn"
         (click)="selectedFile.set(null)"
         [disabled]="!selectedFile()">
-        Clear Selection
+        Auswahl entfernen
       </button>
     </div>
 
@@ -38,7 +40,14 @@
               [class.active]="selectedFile()?.uuid === fileItem.uuid"
               (click)="selectFile(fileItem)"
             >
-              🥸 {{ fileItem.name }}
+              <div>🥸 {{ fileItem.name }}</div>
+              <button
+                mat-icon-button
+                (click)="editDocument(fileItem); $event.stopImmediatePropagation()"
+                title="Dokument ändern">
+                <mat-icon>edit</mat-icon>
+              </button>
+
             </li>
           }
         </ul>
@@ -48,51 +57,101 @@
 
   <!-- Mittlere Spalte (pdf view) -->
   <div class="center-content">
-    <div class="search-bar-container">
-      <input
-        type="text"
-        class="search-input"
-        placeholder="In PDFs suchen..."
-        (input)="onSearchInput($event)"
-        [value]="searchQuery"
-      />
+    <div class="search-bars-wrapper">
+      <div class="search-bar-container">
+        <input
+          type="text"
+          class="search-input"
+          placeholder="In PDFs suchen..."
+          (input)="onSearchInput($event)"
+          [value]="searchQuery"
+        />
 
-      <!-- Suchergebnisse Dropdown mit korrekten Klassen -->
-      @if (searchResults.length > 0) {
-        <ul class="search-results-dropdown">
-          @for (result of searchResults; track result.document.uuid) {
-            <li
-              (click)="selectFile(result.document); searchQuery='';"
-              [class.result-item-filename]="result.type === 'filename'"
-              [class.result-item-content]="result.type === 'content'">
+        <!-- Suchergebnisse Dropdown mit korrekten Klassen -->
+        @if (searchResults.length > 0) {
+          <ul class="search-results-dropdown">
+            @for (result of searchResults; track result.document.uuid) {
+              <li
+                (click)="selectFile(result.document); searchQuery='';"
+                [class.result-item-filename]="result.type === 'filename'"
+                [class.result-item-content]="result.type === 'content'">
 
-              <div class="result-header">
-                <span class="result-title">📄 {{ result.document.name }}</span>
-                <span
-                  class="result-badge"
-                  [class.badge-filename]="result.type === 'filename'"
-                  [class.badge-content]="result.type === 'content'">
-                  {{ result.type === 'filename' ? 'Titel' : 'Inhalt' }}
-                </span>
-              </div>
-
-              @if (result.type === 'content' && result.snippet) {
-                <div class="result-snippet">
-                  ...{{ result.snippet }}...
+                <div class="result-header">
+                  <span class="result-title">📄 {{ result.document.name }}</span>
+                  <span
+                    class="result-badge"
+                    [class.badge-filename]="result.type === 'filename'"
+                    [class.badge-content]="result.type === 'content'">
+                    {{ result.type === 'filename' ? 'Titel' : 'Inhalt' }}
+                  </span>
                 </div>
-              }
-            </li>
-          }
-        </ul>
-      }
+
+                @if (result.type === 'content' && result.snippet) {
+                  <div class="result-snippet">
+                    ...{{ result.snippet }}...
+                  </div>
+                }
+              </li>
+            }
+          </ul>
+        }
+      </div>
+
+      <!-- Suchbar 2: Label-Erstellung & Multiselect -->
+      <div class="search-bar-container">
+        <input
+          type="text"
+          class="search-input"
+          placeholder="Label erstellen & filtern (Enter)..."
+          [(ngModel)]="labelSearchQuery"
+          (input)="onLabelSearchInput()"
+          (keydown.enter)="createAndSelectLabel()"
+        />
+
+        <!-- Dropdown mit bestehenden Labels (wird beim Tippen gefiltert) -->
+        @if (isLabelDropdownOpen && filteredLabels.length > 0) {
+          <ul class="search-results-dropdown">
+            @for (label of filteredLabels; track label.uuid) {
+              <li class="result-item-filename" (click)="toggleLabelSelection(label)">
+                <div class="result-header">
+                <span class="result-title">
+                  <input type="checkbox" [checked]="label.selected"/> {{ label.name }}
+                </span>
+                </div>
+              </li>
+            }
+          </ul>
+        }
+      </div>
     </div>
 
 
     <app-pdf [pdf]="selectedFile()"></app-pdf>
   </div>
 
+
   <!-- Rechte Spalte -->
   <aside class="column right-column">
-    <p>Später bearbeiten.</p>
+    <div class="label-list">
+      @if (!selectedFile()) {
+        <p class="empty-msg">
+          No pdf selected. No labels can be displayed
+        </p>
+      } @else {
+        @if (!selectedFile()?.labels?.length) {
+          <p class="empty-msg">
+            Keine Labels für dieses Dokument vorhanden
+          </p>
+        } @else {
+          <ul>
+            @for (label of getUniqueLabels(); track label.uuid) {
+              <li>
+                🤖 {{ label.name }}
+              </li>
+            }
+          </ul>
+        }
+      }
+    </div>
   </aside>
 </div>
