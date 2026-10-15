@@ -9,6 +9,8 @@ import {PdfComponent} from '../pdf/pdf.component';
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {LabelOption} from '../../dto/label-option';
+import {MatSnackBar} from '@angular/material/snack-bar';
+import {MatDialog} from '@angular/material/dialog';
 
 
 @Component({
@@ -30,6 +32,9 @@ export class MainComponent implements OnInit {
   private searchService = inject(SearchService);
   private router = inject(Router);
   private activatedRoute = inject(ActivatedRoute);
+  private snackbar = inject(MatSnackBar);
+  private dialog = inject(MatDialog);
+
   @ViewChild(PdfComponent)
   private pdfComponent!: PdfComponent;
 
@@ -69,11 +74,6 @@ export class MainComponent implements OnInit {
     return this.labels.filter(label =>
       label.name.toLowerCase().includes(this.labelSearchQuery.toLowerCase())
     );
-  }
-
-  // Getter für aktuell ausgewählte Labels
-  get selectedLabels(): LabelOption[] {
-    return this.labels.filter(l => l.selected);
   }
 
   // Wird beim Tippen in der Label-Searchbar ausgeführt
@@ -125,6 +125,8 @@ export class MainComponent implements OnInit {
             selected: true
           };
 
+          this.snackbar.open("Ein neues Label wurde erstellt.", "OK", {duration: 2500});
+
           this.labels.push(newLabelOption);
 
           this.assignLabelToDocument(
@@ -175,7 +177,9 @@ export class MainComponent implements OnInit {
             name: file.name,
             labels: labelIds
           }).subscribe({
-            next: () => this.cdr.detectChanges(),
+            next: () => {
+              this.cdr.detectChanges()
+            },
             error: err => console.log('Fehler beim Speichern der Dokument-Labels:', err)
           });
         }
@@ -260,7 +264,7 @@ export class MainComponent implements OnInit {
       if (selectedFile) {
         this.documentService.updateDocumentFile(selectedFile.uuid, file).subscribe({
           next: response => {
-            // TODO Handle Success
+            this.snackbar.open("Das Dokument wurde geupdatet.", "OK", {duration: 2500});
             this.pdfComponent.loadPdf(selectedFile)
           },
           error: err => {
@@ -273,6 +277,7 @@ export class MainComponent implements OnInit {
           next: document => {
             // Automatisch die neu hochgeladene Datei auswählen
             this.selectFile(document);
+            this.snackbar.open("Das neue Dokument wurde erstellt.", "OK", {duration: 2500});
 
             // Input zurücksetzen, damit dieselbe Datei erneut gewählt werden kann
             input.value = '';
@@ -360,7 +365,7 @@ export class MainComponent implements OnInit {
 
     this.documentService.deleteDocument(selectedFile.uuid).subscribe({
       next: response => {
-        // TODO Success Handling
+        this.snackbar.open("Das Dokument wurde gelöscht.", "OK", {duration: 2500});
         this.reloadDocuments();
       },
       error: err => {
