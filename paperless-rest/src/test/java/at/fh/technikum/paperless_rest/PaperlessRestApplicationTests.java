@@ -81,9 +81,10 @@ class PaperlessRestApplicationTests {
                 .andExpect(content().string(not("[]")));
 
         // Test the update document function
-        String label1 = "Label 1";
-        String label2 = "Label 2";
-        updateDocumentWithLabels(createResponse.uuid(), "Test File 2", label1, label2);
+        LabelResponse label1 = createLabel("Label 1");
+        LabelResponse label2 = createLabel("Label 2");
+
+        updateDocumentWithLabels(createResponse.uuid(), "Test File 2", label1.uuid(), label2.uuid());
 
         // Test update file
         mvc.perform(multipart("/api/v1/documents/{0}/file", createResponse.uuid())
@@ -120,18 +121,7 @@ class PaperlessRestApplicationTests {
                 .andExpect(content().string("[]"));
 
         // Test label create
-        String testCustomLabel = "Test Custom Label";
-        MvcResult createMvcResult = mvc.perform(post("/api/v1/labels")
-                        .contentType(MediaType.TEXT_PLAIN)
-                        .content(testCustomLabel))
-                .andExpect(status().isOk())
-                .andExpectAll(
-                        jsonPath("$.name").value(testCustomLabel),
-                        jsonPath("$.uuid").isNotEmpty()
-                )
-                .andReturn();
-
-        LabelResponse labelCreateResponse = objectMapper.readValue(createMvcResult.getResponse().getContentAsString(), LabelResponse.class);
+        LabelResponse testCustomLabel = createLabel("Test Custom Label");
 
         // Test that there are labels in the list-api
         mvc.perform(get("/api/v1/labels"))
@@ -139,11 +129,11 @@ class PaperlessRestApplicationTests {
                 .andExpect(content().string(not("[]")));
 
         // Set the document label for further tests
-        updateDocumentWithLabels(testDocument.uuid(), testDocument.name(), testCustomLabel);
+        updateDocumentWithLabels(testDocument.uuid(), testDocument.name(), testCustomLabel.uuid());
 
         // Test label update
         String newTestCustomLabel = "New Test Custom Label";
-        mvc.perform(put("/api/v1/labels/{0}", labelCreateResponse.uuid())
+        mvc.perform(put("/api/v1/labels/{0}", testCustomLabel.uuid())
                         .contentType(MediaType.TEXT_PLAIN)
                         .content(newTestCustomLabel))
                 .andExpect(status().isOk())
@@ -161,7 +151,7 @@ class PaperlessRestApplicationTests {
                 );
 
         // Test find documents with label
-        mvc.perform(get("/api/v1/labels/{0}/documents", labelCreateResponse.uuid()))
+        mvc.perform(get("/api/v1/labels/{0}/documents", testCustomLabel.uuid()))
                 .andExpect(status().isOk())
                 .andExpect(content().string(not("[]")));
 
@@ -170,9 +160,23 @@ class PaperlessRestApplicationTests {
                 .andExpect(status().isOk());
 
         // Test if documents can not be found by removed label
-        mvc.perform(get("/api/v1/labels/{0}/documents", labelCreateResponse.uuid()))
+        mvc.perform(get("/api/v1/labels/{0}/documents", testCustomLabel.uuid()))
                 .andExpect(status().isOk())
                 .andExpect(content().string("[]"));
+    }
+
+    private LabelResponse createLabel(String testCustomLabel) throws Exception {
+        MvcResult createMvcResult = mvc.perform(post("/api/v1/labels")
+                        .contentType(MediaType.TEXT_PLAIN)
+                        .content(testCustomLabel))
+                .andExpect(status().isOk())
+                .andExpectAll(
+                        jsonPath("$.name").value(testCustomLabel),
+                        jsonPath("$.uuid").isNotEmpty()
+                )
+                .andReturn();
+
+        return objectMapper.readValue(createMvcResult.getResponse().getContentAsString(), LabelResponse.class);
     }
 
     private DocumentResponse createTestDocument() throws Exception {
@@ -195,15 +199,15 @@ class PaperlessRestApplicationTests {
         return objectMapper.readValue(createMvcResult.getResponse().getContentAsString(), DocumentResponse.class);
     }
 
-    private void updateDocumentWithLabels(String uuid, String newFileName, String... labels) throws Exception {
-        DocumentUpdateRequest documentUpdateRequest = new DocumentUpdateRequest(newFileName, Arrays.asList(labels));
+    private void updateDocumentWithLabels(String uuid, String newFileName, String... labelUUID) throws Exception {
+        DocumentUpdateRequest documentUpdateRequest = new DocumentUpdateRequest(newFileName, Arrays.asList(labelUUID));
 
         mvc.perform(put("/api/v1/documents/{0}", uuid)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(documentUpdateRequest)))
                 .andExpect(status().isOk())
                 .andExpectAll(
-                        jsonPath("$.labels[*].name").value(everyItem(is(in(labels))))
+                        jsonPath("$.labels[*].uuid").value(everyItem(is(in(labelUUID))))
                 );
     }
 }
