@@ -6,14 +6,10 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {DocumentResponse} from '../../dto/response/document-response';
 import {SearchResult} from '../../dto/search-result';
 import {PdfComponent} from '../pdf/pdf.component';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import {CommonModule} from '@angular/common';
+import {FormsModule} from '@angular/forms';
+import {LabelOption} from '../../dto/label-option';
 
-export interface LabelOption {
-  uuid: string;
-  name: string;
-  selected: boolean;
-}
 
 @Component({
   selector: 'app-main',
@@ -71,7 +67,7 @@ export class MainComponent implements OnInit {
   get filteredLabels(): LabelOption[] {
     if (!this.labelSearchQuery.trim()) return [];
     return this.labels.filter(label =>
-    label.name.toLowerCase().includes(this.labelSearchQuery.toLowerCase())
+      label.name.toLowerCase().includes(this.labelSearchQuery.toLowerCase())
     );
   }
 
@@ -158,14 +154,14 @@ export class MainComponent implements OnInit {
   private assignLabelToDocument(documentUuid: string, labelUuid: string): void {
     const file = this.selectedFile();
 
-    if(file) {
-      if(!file.labels) {
+    if (file) {
+      if (!file.labels) {
         file.labels = [];
       }
 
-      if(!file.labels.some(l => l.uuid === labelUuid)) {
+      if (!file.labels.some(l => l.uuid === labelUuid)) {
         const addedLabel = this.labels.find(l => l.uuid === labelUuid);
-        if(addedLabel) {
+        if (addedLabel) {
           file.labels.push({
             uuid: addedLabel.uuid,
             name: addedLabel.name
@@ -180,7 +176,7 @@ export class MainComponent implements OnInit {
             labels: labelIds
           }).subscribe({
             next: () => this.cdr.detectChanges(),
-            error :err => console.log('Fehler beim Speichern der Dokument-Labels:', err)
+            error: err => console.log('Fehler beim Speichern der Dokument-Labels:', err)
           });
         }
       }
@@ -205,7 +201,7 @@ export class MainComponent implements OnInit {
       label.selected = false;
     } else {
       // Add label if it doesn't exist on this document
-      selectedFile.labels.push({ uuid: label.uuid, name: label.name });
+      selectedFile.labels.push({uuid: label.uuid, name: label.name});
       label.selected = true;
     }
 
@@ -281,6 +277,9 @@ export class MainComponent implements OnInit {
             // Input zurücksetzen, damit dieselbe Datei erneut gewählt werden kann
             input.value = '';
             this.cdr.detectChanges();
+
+            // Dokumente neu laden, damit sie angezeigt werden
+            this.reloadDocuments();
           },
           error: err => {
             // TODO Error Handling

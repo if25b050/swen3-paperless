@@ -11,7 +11,9 @@
         (change)="onFileUpload($event)"
       />
 
-      <button class="circle-btn" (click)="fileInput.click()">Upload PDF</button>
+      <button class="circle-btn" (click)="fileInput.click()">
+        {{ selectedFile() ? "Update PDF" : "Upload PDF" }}
+      </button>
       <button
         class="circle-btn"
         [disabled]="!selectedFile()"
@@ -106,7 +108,7 @@
               <li class="result-item-filename" (click)="toggleLabelSelection(label)">
                 <div class="result-header">
                 <span class="result-title">
-                  <input type="checkbox" [checked]="label.selected" /> {{ label.name }}
+                  <input type="checkbox" [checked]="label.selected"/> {{ label.name }}
                 </span>
                 </div>
               </li>
