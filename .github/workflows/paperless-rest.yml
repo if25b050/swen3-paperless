@@ -15,9 +15,6 @@ on:
   pull_request:
     branches: [ "main" ]
     paths: paperless-rest/**
-defaults:
-  run:
-    working-directory: paperless-rest
 
 jobs:
   build:
