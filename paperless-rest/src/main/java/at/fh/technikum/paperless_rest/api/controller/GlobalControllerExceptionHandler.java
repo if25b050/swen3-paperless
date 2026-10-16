@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -22,6 +23,12 @@ public class GlobalControllerExceptionHandler {
         return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, "There was a conflict when inserting.");
     }
 
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ProblemDetail handleInvalidMessage(HttpMessageNotReadableException ex) {
+        log.error(ex.getMessage(), ex);
+        return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "The request was invalid.");
+    }
+
     @ExceptionHandler(ModelValidationFailedException.class)
     public ProblemDetail handleValidationFailed(ModelValidationFailedException ex) {
         log.warn(ex.getMessage(), ex);
@@ -29,7 +36,7 @@ public class GlobalControllerExceptionHandler {
     }
 
     @ExceptionHandler(InvalidUUIDException.class)
-    public ProblemDetail handleInvalidUUID(DALObjectNotFoundException ex) {
+    public ProblemDetail handleInvalidUUID(InvalidUUIDException ex) {
         log.warn(ex.getMessage(), ex);
         return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
@@ -37,13 +44,13 @@ public class GlobalControllerExceptionHandler {
     @ExceptionHandler(DALObjectNotFoundException.class)
     public ProblemDetail handleNotFound(DALObjectNotFoundException ex) {
         log.warn(ex.getMessage());
-        return ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
+        return ProblemDetail.forStatus(HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(S3ObjectNotFoundException.class)
     public ProblemDetail handleNotFound(S3ObjectNotFoundException ex) {
         log.warn(ex.getMessage());
-        return ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
+        return ProblemDetail.forStatus(HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(Exception.class)

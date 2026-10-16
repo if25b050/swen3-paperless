@@ -1,5 +1,7 @@
 package at.fh.technikum.paperless_rest.business.service;
 
+import at.fh.technikum.paperless_rest.business.exception.DALObjectNotFoundException;
+import at.fh.technikum.paperless_rest.business.exception.S3ObjectNotFoundException;
 import at.fh.technikum.paperless_rest.business.model.ValidationModel;
 import at.fh.technikum.paperless_rest.business.model.label.LabelCreateModel;
 import at.fh.technikum.paperless_rest.business.model.label.LabelDeleteModel;
@@ -57,7 +59,11 @@ public class LabelService {
     public void deleteLabel(LabelDeleteModel labelDeleteModel) {
         log.debug("Try to delete label with {}", kv("uuid", labelDeleteModel.uuid()));
         ValidationModel.validate(labelDeleteModel);
+        try {
 
-        labelRepoService.deleteLabel(labelDeleteModel);
+            labelRepoService.deleteLabel(labelDeleteModel);
+        } catch (S3ObjectNotFoundException | DALObjectNotFoundException ex) {
+            log.info("Label with {} was tried to be deleted, but was missing.", kv("uuid", labelDeleteModel.uuid()), ex);
+        }
     }
 }
