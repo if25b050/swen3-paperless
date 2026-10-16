@@ -18,7 +18,9 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
+        with:
+          token: ${{ secrets.PAT || secrets.GITHUB_TOKEN}}
 
       - name: Update version in build.gradle.kts
         run: |
@@ -45,19 +47,13 @@ jobs:
           print(f"Successfully updated version to {new_version}")
           '
 
-      - name: Commit and push changes
-        uses: stefanzweifel/git-auto-commit-action@v5
+      - name: Create Version Commit and Tag
+        uses: stefanzweifel/git-auto-commit-action@v7
         with:
           commit_message: "Bump version to ${{ inputs.version }}"
+          tag_name: "v${{ inputs.version }}-alpha"
           file_pattern: build.gradle.kts
           
-      - name: Create and push Git tag
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git tag "v${{ inputs.version }}-alpha"
-          git push origin "v${{ inputs.version }}-alpha"
-
       - name: Update snapshot version in build.gradle.kts
         run: |
             python3 -c '
@@ -84,7 +80,7 @@ jobs:
             '
 
       - name: Commit and push snapshot changes
-        uses: stefanzweifel/git-auto-commit-action@v5
+        uses: stefanzweifel/git-auto-commit-action@v7
         with:
           commit_message: "Change to Snapshot to ${{ inputs.version }}"
           file_pattern: build.gradle.kts
