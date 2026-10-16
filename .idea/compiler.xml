@@ -6,19 +6,22 @@
         <outputRelativeToContentRoot value="true" />
         <processorPath useClasspath="false">
           <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.projectlombok/lombok/1.18.46/a5cfe99fdf320e84955ef653f2ce1bf789d11385/lombok-1.18.46.jar" />
+          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.mapstruct/mapstruct-processor/1.6.2/68f761eab9d57ea0a3721aaca822cdff5eaaf972/mapstruct-processor-1.6.2.jar" />
         </processorPath>
-        <module name="at.fh.technikum.swen3-paperless.test" />
+        <module name="swen3-paperless.paperless-rest.main" />
       </profile>
       <profile name="Gradle Imported" enabled="true">
         <outputRelativeToContentRoot value="true" />
         <processorPath useClasspath="false">
           <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.projectlombok/lombok/1.18.46/a5cfe99fdf320e84955ef653f2ce1bf789d11385/lombok-1.18.46.jar" />
-          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.mapstruct/mapstruct-processor/1.6.2/68f761eab9d57ea0a3721aaca822cdff5eaaf972/mapstruct-processor-1.6.2.jar" />
         </processorPath>
-        <module name="at.fh.technikum.swen3-paperless.main" />
+        <module name="swen3-paperless.paperless-rest.test" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="at.fh.technikum.swen3-paperless" target="25" />
+      <module name="at.fh.technikum.swen3-paperless.main" target="25" />
+      <module name="at.fh.technikum.swen3-paperless.test" target="25" />
       <module name="paperless-rest" target="25" />
       <module name="paperless-rest.main" target="25" />
       <module name="paperless-rest.test" target="25" />
@@ -32,6 +35,9 @@
       <module name="paperless-rest" options="-parameters" />
       <module name="paperless-rest.main" options="-parameters" />
       <module name="paperless-rest.test" options="-parameters" />
+      <module name="swen3-paperless.paperless-rest" options="-parameters" />
+      <module name="swen3-paperless.paperless-rest.main" options="-parameters" />
+      <module name="swen3-paperless.paperless-rest.test" options="-parameters" />
     </option>
   </component>
 </project>
