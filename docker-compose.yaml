@@ -25,8 +25,7 @@ services:
       - backend
       - full
     build:
-      context: paperless-rest
-      dockerfile: rest.Dockerfile
+      dockerfile: paperless-rest/rest.Dockerfile
     environment:
       DATABASE_URL: "jdbc:postgresql://db:5432/paperless"
       S3_URL: "http://rustfs:9000"
@@ -37,7 +36,7 @@ services:
       - frontend
       - full
     build:
-      context: swen3-paperless-frontend
+      context: paperless-frontend
       dockerfile: frontend.Dockerfile
     ports:
       - "4200:8080"

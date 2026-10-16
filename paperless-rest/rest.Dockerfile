@@ -2,13 +2,18 @@
 FROM eclipse-temurin:25-jdk AS builder
 
 WORKDIR /app
-COPY ../gradle gradle
-COPY ../gradlew gradlew.bat ./
-COPY build.gradle.kts settings.gradle.kts ./
-COPY src src
+COPY gradle gradle
+COPY gradlew gradlew.bat ./
+COPY settings.gradle.kts ./
+COPY paperless-rest/build.gradle.kts ./paperless-rest/
+COPY paperless-rest/src paperless-rest/src
+
+# Add empty Project-Folders so the build does not fail
+RUN mkdir "paperless-frontend"
+
 
 # Build the application
-RUN ./gradlew clean build -x test
+RUN ./gradlew clean :paperless-rest:build -x test
 
 # Runtime stage
 FROM eclipse-temurin:25-jre
@@ -16,7 +21,7 @@ FROM eclipse-temurin:25-jre
 WORKDIR /app
 
 # Copy the JAR from builder
-COPY --from=builder /app/build/libs/*.jar app.jar
+COPY --from=builder /app/paperless-rest/build/libs/*.jar app.jar
 
 # Expose port (adjust if needed)
 EXPOSE 8080
