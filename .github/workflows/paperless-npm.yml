@@ -8,6 +8,10 @@ on:
     branches: [ "main" ]
     paths: paperless-frontend/**
 
+defaults:
+  run:
+    working-directory: paperless-frontend
+
 jobs:
   build:
     runs-on: ubuntu-latest
