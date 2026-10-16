@@ -8,13 +8,17 @@ on:
     branches: [ "main" ]
     paths: paperless-frontend/**
 
+defaults:
+  run:
+    working-directory: paperless-frontend
+
 jobs:
   build:
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        node-version: [18.x, 20.x, 22.x]
+        node-version: [24.x]
 
     steps:
     - uses: actions/checkout@v4
