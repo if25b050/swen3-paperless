@@ -13,6 +13,7 @@ import at.fh.technikum.paperless_rest.business.service.DocumentService;
 import at.fh.technikum.paperless_rest.business.service.LabelService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -77,6 +78,7 @@ public class LabelController {
     }
 
     @DeleteMapping(path = "/{uuid}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteLabel(@PathVariable UUID uuid) {
         labelService.deleteLabel(new LabelDeleteModel(uuid));
         log.info("Delete label {}", kv("uuid", uuid));
