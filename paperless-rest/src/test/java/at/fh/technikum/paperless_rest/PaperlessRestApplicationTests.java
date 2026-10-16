@@ -102,7 +102,7 @@ class PaperlessRestApplicationTests {
 
         // Test delete file
         mvc.perform(delete("/api/v1/documents/{0}", createResponse.uuid()))
-                .andExpect(status().isOk());
+                .andExpect(status().isNoContent());
 
         // Test that there are no documents
         mvc.perform(get("/api/v1/documents"))
@@ -157,7 +157,7 @@ class PaperlessRestApplicationTests {
 
         // Test delete label
         mvc.perform(delete("/api/v1/documents/{0}", testDocument.uuid()))
-                .andExpect(status().isOk());
+                .andExpect(status().isNoContent());
 
         // Test if documents can not be found by removed label
         mvc.perform(get("/api/v1/labels/{0}/documents", testCustomLabel.uuid()))

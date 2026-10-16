@@ -1,3 +1,5 @@
 /.gradle/
 /gradle/wrapper/gradle-wrapper.jar
 HELP.md
+/.idea/modules/paperless-rest/swen3-paperless.paperless-rest.main.iml
+/.idea/modules/paperless-rest/swen3-paperless.paperless-rest.test.iml
