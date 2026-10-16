@@ -6,8 +6,6 @@ plugins {
 // Fix Error in Intellij Sync
 tasks.register("prepareKotlinBuildScriptModel"){}
 
-group = "at.fh.technikum"
-version = "0.0.1-SNAPSHOT"
 
 java {
 	toolchain {
