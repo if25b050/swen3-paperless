@@ -1,0 +1,91 @@
+name: Create Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'New version to set (e.g., 1.2.0)'
+        required: true
+        type: string
+
+jobs:
+  bump-version:
+    runs-on: ubuntu-latest
+    
+    # Required permissions to allow the action to push changes back to the repo
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Update version in build.gradle.kts
+        run: |
+          python3 -c '
+          import re
+          
+          new_version = "${{ inputs.version }}"
+          
+          with open("build.gradle.kts", "r") as f:
+              content = f.read()
+          
+          # Regex matches patterns like: version = "1.0.0" or version = '\''1.0.0'\'' with flexible spacing
+          pattern = r"version\s*=\s*.+"
+          replacement = f"version = \"{new_version}\""
+          
+          new_content, count = re.subn(pattern, replacement, content)
+          
+          if count == 0:
+              raise ValueError("Could not find a version assignment line in build.gradle.kts")
+              
+          with open("build.gradle.kts", "w") as f:
+              f.write(new_content)
+          
+          print(f"Successfully updated version to {new_version}")
+          '
+
+      - name: Commit and push changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "Bump version to ${{ inputs.version }}"
+          file_pattern: build.gradle.kts
+          
+      - name: Create and push Git tag
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag "v${{ inputs.version }}-alpha"
+          git push origin "v${{ inputs.version }}-alpha"
+
+      - name: Update snapshot version in build.gradle.kts
+        run: |
+            python3 -c '
+            import re
+            
+            new_version = "${{ inputs.version }}-SNAPSHOT"
+            
+            with open("build.gradle.kts", "r") as f:
+                content = f.read()
+            
+            # Regex matches patterns like: version = "1.0.0" or version = '\''1.0.0'\'' with flexible spacing
+            pattern = r"version\s*=\s*.+"
+            replacement = f"version = \"{new_version}\""
+            
+            new_content, count = re.subn(pattern, replacement, content)
+            
+            if count == 0:
+                raise ValueError("Could not find a version assignment line in build.gradle.kts")
+                
+            with open("build.gradle.kts", "w") as f:
+                f.write(new_content)
+            
+            print(f"Successfully updated version to {new_version}")
+            '
+
+      - name: Commit and push snapshot changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "Change to Snapshot to ${{ inputs.version }}"
+          file_pattern: build.gradle.kts
+          
