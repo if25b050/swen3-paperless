@@ -67,15 +67,6 @@ jobs:
         java-version: '25'
         distribution: 'temurin'
 
-    - name: Check Folder
-      run: ls
-    - name: Check Folder 2
-      run: pwd
-
-    # - name: Change Graldew Permission
-    #   run: chmod +x ./gradlew
-
-
     # Generates and submits a dependency graph, enabling Dependabot Alerts for all project dependencies.
     # See: https://github.com/gradle/actions/blob/main/dependency-submission/README.md
     - name: Generate and submit dependency graph
