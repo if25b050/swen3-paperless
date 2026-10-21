@@ -1,26 +1,31 @@
 services:
   db:
-    container_name: PaperlessDB
     image: postgres:17.6
+    container_name: PaperlessDB
+    restart: unless-stopped
+    profiles:
+      - frontend
+      - full
     environment:
       POSTGRES_USER: paperless
       POSTGRES_PASSWORD: paperless
       PGDATA: /data/postgres
       POSTGRES_DB: paperless
-    volumes:
-      - db:/data/postgres
     ports:
       - "5432:5432"
-    restart: unless-stopped
+    volumes:
+      - db:/data/postgres
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -d paperless -U paperless" ]
       interval: 30s
       timeout: 10s
       retries: 5
   backend:
+    restart: unless-stopped
     depends_on:
       - db
       - rustfs
+      - rabbitmq
     profiles:
       - backend
       - full
@@ -32,6 +37,7 @@ services:
     ports:
       - "8080:8080"
   frontend:
+    restart: unless-stopped
     profiles:
       - frontend
       - full
@@ -40,6 +46,24 @@ services:
       dockerfile: frontend.Dockerfile
     ports:
       - "4200:8080"
+
+  rabbitmq:
+    image: rabbitmq:4-management-alpine
+    restart: unless-stopped
+    profiles:
+      - backend
+      - full
+    environment:
+      RABBITMQ_DEFAULT_USER: paperlessMQ
+      RABBITMQ_DEFAULT_PASS: paperlessMQ
+    ports:
+      - "5672:5672" # Message Queue
+      - "15672:15672" # Management-Plugin
+#      - "15692:15692" # Prometheus-Metrics
+    volumes:
+      - rabbitmq-lib:/var/lib/rabbitmq/
+      - rabbitmq-log:/var/log/rabbitmq
+
   rustfs:
     image: rustfs/rustfs:1.0.1
     depends_on:
@@ -120,3 +144,5 @@ volumes:
   db:
   rustfs_data:
   rustfs_logs:
+  rabbitmq-lib:
+  rabbitmq-log:
