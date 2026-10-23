@@ -1,6 +1,6 @@
-package at.fh.technikum.paperless_rest.business.integration;
+package at.fh.technikum.paperless_common.business.integration;
 
-import at.fh.technikum.paperless_rest.business.exception.S3ObjectNotFoundException;
+import at.fh.technikum.paperless_common.business.exception.S3ObjectNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -12,12 +12,14 @@ import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.*;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URI;
 import java.util.UUID;
 
-import static at.fh.technikum.paperless_rest.business.BusinessUtil.kv;
+import static at.fh.technikum.paperless_common.business.BusinessUtil.kv;
+
 
 @Service
 @Slf4j
@@ -59,6 +61,15 @@ public class FileIntegrationImpl implements FileIntegration {
             System.out.println("Bucket created: " + s3Bucket);
         } catch (BucketAlreadyExistsException | BucketAlreadyOwnedByYouException e) {
             System.out.println("Bucket \"" + s3Bucket + "\" already exists.");
+        }
+    }
+
+    public byte[] getFile(UUID documentId) {
+        try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+            this.getFile(documentId, out);
+            return out.toByteArray();
+        } catch (IOException e) {
+            throw new RuntimeException("Stream creation failed.", e);
         }
     }
 

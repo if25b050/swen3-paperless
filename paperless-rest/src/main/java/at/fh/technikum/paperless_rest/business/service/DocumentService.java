@@ -1,8 +1,8 @@
 package at.fh.technikum.paperless_rest.business.service;
 
 import at.fh.technikum.paperless_rest.business.exception.DALObjectNotFoundException;
-import at.fh.technikum.paperless_rest.business.exception.S3ObjectNotFoundException;
-import at.fh.technikum.paperless_rest.business.integration.FileIntegration;
+import at.fh.technikum.paperless_common.business.exception.S3ObjectNotFoundException;
+import at.fh.technikum.paperless_common.business.integration.FileIntegration;
 import at.fh.technikum.paperless_rest.business.integration.SearchIntegration;
 import at.fh.technikum.paperless_rest.business.model.ValidationModel;
 import at.fh.technikum.paperless_rest.business.model.document.*;
@@ -18,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.UUID;
 
-import static at.fh.technikum.paperless_rest.business.BusinessUtil.kv;
+import static at.fh.technikum.paperless_common.business.BusinessUtil.kv;
 
 @Service
 @Slf4j

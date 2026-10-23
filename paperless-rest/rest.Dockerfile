@@ -5,15 +5,15 @@ WORKDIR /app
 COPY gradle gradle
 COPY gradlew gradlew.bat ./
 COPY settings.gradle.kts ./
-COPY paperless-rest/build.gradle.kts ./paperless-rest/
-COPY paperless-rest/src paperless-rest/src
+COPY paperless-common/ ./paperless-common/
+COPY paperless-rest/ ./paperless-rest/
 
 # Add empty Project-Folders so the build does not fail
 RUN mkdir "paperless-frontend"
 
 
 # Build the application
-RUN ./gradlew clean :paperless-rest:build -x test
+RUN ./gradlew clean paperless-rest:build -x test
 
 # Runtime stage
 FROM eclipse-temurin:25-jre
