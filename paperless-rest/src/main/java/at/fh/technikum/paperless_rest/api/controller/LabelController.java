@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
-import static at.fh.technikum.paperless_rest.business.BusinessUtil.kv;
+import static at.fh.technikum.paperless_common.business.BusinessUtil.kv;
 
 @RestController
 @RequestMapping("/api/v1/labels")
