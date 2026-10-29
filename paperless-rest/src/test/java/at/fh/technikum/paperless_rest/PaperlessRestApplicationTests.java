@@ -10,6 +10,7 @@ import at.fh.technikum.paperless_rest.dal.repository.LabelRepository;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
@@ -37,6 +38,8 @@ class PaperlessRestApplicationTests {
 
     @MockitoBean
     private FileIntegration fileIntegration; // Mock the file-integration for testing
+    @MockitoBean
+    private RabbitTemplate queueIntegration; // Mock the queue-integration for testing
 
     @Autowired
     private DocumentRepository documentRepository;

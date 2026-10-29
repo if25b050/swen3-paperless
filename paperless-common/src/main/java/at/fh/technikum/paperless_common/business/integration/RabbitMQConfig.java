@@ -1,4 +1,4 @@
-package at.fh.technikum.paperless_rest.business.integration;
+package at.fh.technikum.paperless_common.business.integration;
 
 import org.springframework.amqp.core.Queue;
 import org.springframework.context.annotation.Bean;

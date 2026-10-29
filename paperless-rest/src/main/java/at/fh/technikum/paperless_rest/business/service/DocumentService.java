@@ -3,7 +3,7 @@ package at.fh.technikum.paperless_rest.business.service;
 import at.fh.technikum.paperless_rest.business.exception.DALObjectNotFoundException;
 import at.fh.technikum.paperless_common.business.exception.S3ObjectNotFoundException;
 import at.fh.technikum.paperless_common.business.integration.FileIntegration;
-import at.fh.technikum.paperless_rest.business.integration.RabbitMQConfig;
+import at.fh.technikum.paperless_common.business.integration.RabbitMQConfig;
 import at.fh.technikum.paperless_rest.business.integration.SearchIntegration;
 import at.fh.technikum.paperless_rest.business.model.ValidationModel;
 import at.fh.technikum.paperless_rest.business.model.document.*;
