@@ -11,6 +11,7 @@ COPY paperless-rest/src paperless-rest/src
 # Add empty Project-Folders so the build does not fail
 RUN mkdir "paperless-frontend"
 
+RUN sed -i 's/\r$//' gradlew && chmod +x gradlew
 
 # Build the application
 RUN ./gradlew clean :paperless-rest:build -x test

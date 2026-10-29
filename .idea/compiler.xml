@@ -18,7 +18,7 @@
         <module name="swen3-paperless.paperless-rest.test" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
+    <bytecodeTargetLevel target="25">
       <module name="at.fh.technikum.swen3-paperless" target="25" />
       <module name="at.fh.technikum.swen3-paperless.main" target="25" />
       <module name="at.fh.technikum.swen3-paperless.test" target="25" />
