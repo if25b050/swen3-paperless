@@ -3,6 +3,7 @@ package at.fh.technikum.paperless_rest.business.service;
 import at.fh.technikum.paperless_rest.business.exception.DALObjectNotFoundException;
 import at.fh.technikum.paperless_common.business.exception.S3ObjectNotFoundException;
 import at.fh.technikum.paperless_common.business.integration.FileIntegration;
+import at.fh.technikum.paperless_rest.business.integration.RabbitMQConfig;
 import at.fh.technikum.paperless_rest.business.integration.SearchIntegration;
 import at.fh.technikum.paperless_rest.business.model.ValidationModel;
 import at.fh.technikum.paperless_rest.business.model.document.*;
@@ -11,6 +12,7 @@ import at.fh.technikum.paperless_rest.business.model.search.DocumentSearchResult
 import at.fh.technikum.paperless_rest.business.model.search.SearchPagingModel;
 import at.fh.technikum.paperless_rest.dal.service.DocumentRepoService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,12 +28,14 @@ public class DocumentService {
     private final DocumentRepoService documentRepoService;
     private final FileIntegration fileIntegration;
     private final SearchIntegration searchIntegration;
+    private final RabbitTemplate rabbitTemplate;
 
     @Autowired
-    public DocumentService(DocumentRepoService documentRepoService, FileIntegration fileIntegration, SearchIntegration searchIntegration) {
+    public DocumentService(DocumentRepoService documentRepoService, FileIntegration fileIntegration, SearchIntegration searchIntegration, RabbitTemplate rabbitTemplate) {
         this.documentRepoService = documentRepoService;
         this.fileIntegration = fileIntegration;
         this.searchIntegration = searchIntegration;
+        this.rabbitTemplate = rabbitTemplate;
     }
 
     public DocumentModel getDocumentById(UUID uuid) {
@@ -82,6 +86,9 @@ public class DocumentService {
         DocumentModel document = documentRepoService.createDocument(documentCreateModel);
         // TODO Lambda fuer Rollback logik mit verteilten Transaktionen
         fileIntegration.saveFile(document.uuid(), documentCreateModel.file());
+
+        rabbitTemplate.convertAndSend(RabbitMQConfig.OCR_QUEUE, document.uuid().toString());
+        log.info("Sent OCR processing message to RabbitMQ for document uuid: {}", document.uuid());
 
         return document;
     }
