@@ -5,10 +5,11 @@
     <option name="linkedExternalProjectsSettings">
       <GradleProjectSettings>
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="gradleJvm" value="#JAVA_HOME" />
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
-            <option value="$PROJECT_DIR$/paperless-frontend" />
+            <option value="$PROJECT_DIR$/paperless-common" />
             <option value="$PROJECT_DIR$/paperless-rest" />
           </set>
         </option>

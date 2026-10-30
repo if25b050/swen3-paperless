@@ -1,6 +1,6 @@
-package at.fh.technikum.paperless_rest.business;
+package at.fh.technikum.paperless_common.business;
 
-import at.fh.technikum.paperless_rest.business.exception.InvalidUUIDException;
+import at.fh.technikum.paperless_common.business.exception.InvalidUUIDException;
 
 import java.util.UUID;
 

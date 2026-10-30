@@ -1,9 +1,9 @@
 package at.fh.technikum.paperless_rest.api.controller;
 
 import at.fh.technikum.paperless_rest.business.exception.DALObjectNotFoundException;
-import at.fh.technikum.paperless_rest.business.exception.InvalidUUIDException;
+import at.fh.technikum.paperless_common.business.exception.InvalidUUIDException;
 import at.fh.technikum.paperless_rest.business.exception.ModelValidationFailedException;
-import at.fh.technikum.paperless_rest.business.exception.S3ObjectNotFoundException;
+import at.fh.technikum.paperless_common.business.exception.S3ObjectNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -56,6 +56,6 @@ public class GlobalControllerExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ProblemDetail exceptionFallback(HttpServletRequest req, Exception ex) {
         log.error("Request: {} raised {}", req.getRequestURL(), ex.getMessage(), ex);
-        return ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
+        return ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, "Something went wrong.");
     }
 }
