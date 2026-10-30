@@ -1,4 +1,4 @@
-package at.fh.technikum.paperless_rest.business.integration;
+package at.fh.technikum.paperless_ocr.business.integration;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;

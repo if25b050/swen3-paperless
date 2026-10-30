@@ -10,6 +10,7 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/paperless-common" />
+            <option value="$PROJECT_DIR$/paperless-ocr" />
             <option value="$PROJECT_DIR$/paperless-rest" />
           </set>
         </option>
