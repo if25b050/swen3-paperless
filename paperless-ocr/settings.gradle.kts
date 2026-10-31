@@ -1,1 +1,1 @@
-rootProject.name = "paperless-common"
+rootProject.name = "paperless-ocr"

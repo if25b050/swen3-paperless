@@ -7,10 +7,10 @@ COPY gradlew gradlew.bat ./
 COPY settings.gradle.kts ./
 COPY paperless-common/ ./paperless-common/
 COPY paperless-rest/ ./paperless-rest/
-COPY paperless-ocr/ ./paperless-ocr/
 
 # Add empty Project-Folders so the build does not fail
 RUN mkdir "paperless-frontend"
+RUN mkdir "paperless-ocr"
 
 RUN sed -i 's/\r$//' gradlew && chmod +x gradlew
 

@@ -36,6 +36,18 @@ services:
       S3_URL: "http://rustfs:9000"
     ports:
       - "8080:8080"
+  ocr:
+    restart: unless-stopped
+    depends_on:
+      - rustfs
+      - rabbitmq
+    profiles:
+      - backend
+      - full
+    build:
+      dockerfile: paperless-ocr/ocr.Dockerfile
+    environment:
+      S3_URL: "http://rustfs:9000"
   frontend:
     restart: unless-stopped
     profiles:
