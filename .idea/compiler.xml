@@ -39,6 +39,9 @@
       <module name="paperless-rest" options="-parameters" />
       <module name="paperless-rest.main" options="-parameters" />
       <module name="paperless-rest.test" options="-parameters" />
+      <module name="swen3-paperless.paperless-ocr" options="-parameters" />
+      <module name="swen3-paperless.paperless-ocr.main" options="-parameters" />
+      <module name="swen3-paperless.paperless-ocr.test" options="-parameters" />
       <module name="swen3-paperless.paperless-rest" options="-parameters" />
       <module name="swen3-paperless.paperless-rest.main" options="-parameters" />
       <module name="swen3-paperless.paperless-rest.test" options="-parameters" />

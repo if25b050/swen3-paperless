@@ -1,12 +1,12 @@
 package at.fh.technikum.paperless_rest;
 
-import at.fh.technikum.paperless_rest.api.dto.request.DocumentUpdateRequest;
-import at.fh.technikum.paperless_rest.api.dto.response.DocumentResponse;
-import at.fh.technikum.paperless_rest.api.dto.response.LabelResponse;
 import at.fh.technikum.paperless_common.business.integration.FileIntegration;
-import at.fh.technikum.paperless_rest.business.model.document.DocumentCreateModel;
-import at.fh.technikum.paperless_rest.dal.repository.DocumentRepository;
-import at.fh.technikum.paperless_rest.dal.repository.LabelRepository;
+import at.fh.technikum.paperless_rest.document.api.dto.request.DocumentUpdateRequest;
+import at.fh.technikum.paperless_rest.document.api.dto.response.DocumentResponse;
+import at.fh.technikum.paperless_rest.document.business.model.DocumentCreateModel;
+import at.fh.technikum.paperless_rest.document.dal.DocumentRepository;
+import at.fh.technikum.paperless_rest.label.api.response.LabelResponse;
+import at.fh.technikum.paperless_rest.label.dal.LabelRepository;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
