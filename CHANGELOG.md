@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 The format is based on "Keep a Changelog" and follows Semantic Versioning.
 
-## [v0.3.0-alpha] - 2026-11-03
+## [v0.3.0-alpha] - 2026-11-03 (prerelease)
 ### Added / Changed
 - Change Gradle Version (PR #79) — @if25b050
 - Add RabbitMQ to the Docker Compose (PR #80) — @if25b050
