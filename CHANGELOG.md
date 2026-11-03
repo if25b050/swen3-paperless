@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file.
 
 The format is based on "Keep a Changelog" and follows Semantic Versioning.
 
+## [v0.3.0-alpha] - 2026-11-03
+### Added / Changed
+- Change Gradle Version (PR #79) — @if25b050
+- Add RabbitMQ to the Docker Compose (PR #80) — @if25b050
+- Extract Module and setup Build (PR #81) — @if25b050
+- Feature: queueing (PR #82) — @Manfred190203
+- Refactor for DDD (PR #84) — @if25b050
+
+Full release notes: https://github.com/if25b050/swen3-paperless/releases/tag/v0.3.0-alpha  
+Full changelog (compare): https://github.com/if25b050/swen3-paperless/compare/v0.2.0-alpha...v0.3.0-alpha
+
+---
+
 ## [v0.2.0-alpha] - 2026-10-18 (prerelease)
 ### Added / Changed
 - Setup rustfs for blobstorage with Docker (PR #65) — @if25b050
