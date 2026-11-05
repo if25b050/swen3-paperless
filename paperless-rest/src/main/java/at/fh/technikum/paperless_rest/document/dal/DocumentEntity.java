@@ -1,5 +1,6 @@
 package at.fh.technikum.paperless_rest.document.dal;
 
+import at.fh.technikum.paperless_rest.common.dal.AuditedEntity;
 import at.fh.technikum.paperless_rest.label.entity.LabelEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -8,18 +9,13 @@ import lombok.ToString;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @Entity
 @Getter
 @Setter
 @ToString
 @Table(name = "documents")
-public class DocumentEntity {
-    @Id
-    @Column
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID uuid;
+public class DocumentEntity extends AuditedEntity {
 
     @Column(nullable = false)
     private String name;

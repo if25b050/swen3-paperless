@@ -25,7 +25,7 @@ public abstract class DocumentMapper {
 
     public abstract DocumentUpdateModel toDocumentUpdateModel(UUID uuid, DocumentUpdateRequest documentUpdateRequest);
 
-    public  abstract DocumentGetFileModel toDocumentGetFileModel(UUID uuid, OutputStream fileTarget);
+    public abstract DocumentGetFileModel toDocumentGetFileModel(UUID uuid, OutputStream fileTarget);
 
     public DocumentUpdateFileModel toDocumentUpdateFileModel(UUID uuid, MultipartFile multipartFile) {
         try {
@@ -37,6 +37,9 @@ public abstract class DocumentMapper {
 
     @Mapping(target = "uuid", ignore = true)
     @Mapping(target = "labels", ignore = true)
+    @Mapping(target = "createdDate", ignore = true)
+    @Mapping(target = "modifiedDate", ignore = true)
+    @Mapping(target = "version", ignore = true)
     public abstract DocumentEntity toDocumentEntity(DocumentCreateModel documentCreateModel);
 
     public abstract DocumentModel toDocumentModel(DocumentEntity documentEntity);

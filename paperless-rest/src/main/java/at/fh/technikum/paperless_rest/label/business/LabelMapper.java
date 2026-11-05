@@ -15,5 +15,8 @@ public interface LabelMapper {
 
     @Mapping(target = "uuid", ignore = true)
     @Mapping(target = "documents", ignore = true)
+    @Mapping(target = "createdDate", ignore = true)
+    @Mapping(target = "modifiedDate", ignore = true)
+    @Mapping(target = "version", ignore = true)
     LabelEntity toEntity(LabelCreateModel labelCreateModel);
 }
