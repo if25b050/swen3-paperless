@@ -107,6 +107,7 @@
           [(ngModel)]="labelSearchQuery"
           (input)="onLabelSearchInput()"
           (keydown.enter)="createAndSelectLabel()"
+          [disabled]="!selectedFile()"
         />
 
         <!-- Dropdown mit bestehenden Labels (wird beim Tippen gefiltert) -->
