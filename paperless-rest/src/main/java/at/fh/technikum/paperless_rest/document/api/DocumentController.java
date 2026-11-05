@@ -1,19 +1,22 @@
 package at.fh.technikum.paperless_rest.document.api;
 
+import at.fh.technikum.paperless_common.business.BusinessUtil;
 import at.fh.technikum.paperless_rest.document.api.dto.request.DocumentUpdateRequest;
 import at.fh.technikum.paperless_rest.document.api.dto.response.DocumentResponse;
 import at.fh.technikum.paperless_rest.document.business.DocumentMapper;
 import at.fh.technikum.paperless_rest.document.business.DocumentService;
 import at.fh.technikum.paperless_rest.document.business.model.*;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.validator.constraints.UUID;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.UUID;
 
 import static at.fh.technikum.paperless_common.business.BusinessUtil.kv;
 
@@ -40,14 +43,14 @@ public class DocumentController {
     }
 
     @GetMapping(path = "/{uuid}", produces = "application/json")
-    public DocumentResponse getDocument(@PathVariable UUID uuid) {
-        DocumentModel documentModel = documentService.getDocumentById(uuid);
+    public DocumentResponse getDocument(@PathVariable @UUID(allowNil = false) String uuid) {
+        DocumentModel documentModel = documentService.getDocumentById(BusinessUtil.convertToUUID(uuid));
         log.info("Retrieve document {}", kv("uuid", uuid));
         return documentMapper.toDocumentResponse(documentModel);
     }
 
     @PostMapping(produces = "application/json")
-    public DocumentResponse createDocument(@RequestParam("file") MultipartFile file) {
+    public DocumentResponse createDocument(@RequestParam("file") @NotNull MultipartFile file) {
         DocumentCreateModel documentCreateModel = documentMapper.toDocumentCreateModel(file);
         DocumentModel documentModel = documentService.createDocument(documentCreateModel);
         log.info("Created document {} with {}", kv("uuid", documentModel.uuid()), kv("name", documentModel.name()));
@@ -55,8 +58,8 @@ public class DocumentController {
     }
 
     @PutMapping(path = "/{uuid}", consumes = "application/json", produces = "application/json")
-    public DocumentResponse updateDocument(@PathVariable UUID uuid, @RequestBody DocumentUpdateRequest documentUpdateRequest) {
-        DocumentUpdateModel documentUpdateModel = documentMapper.toDocumentUpdateModel(uuid, documentUpdateRequest);
+    public DocumentResponse updateDocument(@PathVariable @UUID(allowNil = false) String uuid, @RequestBody @NotNull @Valid DocumentUpdateRequest documentUpdateRequest) {
+        DocumentUpdateModel documentUpdateModel = documentMapper.toDocumentUpdateModel(BusinessUtil.convertToUUID(uuid), documentUpdateRequest);
         DocumentModel documentModel = documentService.updateDocument(documentUpdateModel);
         log.info("Updated document-metadata {} with {} and {}", kv("uuid", documentModel.uuid()),
                 kv("name", documentModel.name()), kv("labels", documentModel.labels()));
@@ -64,9 +67,9 @@ public class DocumentController {
     }
 
     @GetMapping(path = "/{uuid}/file", produces = "application/pdf")
-    public void getDocumentFile(@PathVariable UUID uuid, HttpServletResponse response) {
+    public void getDocumentFile(@PathVariable @UUID(allowNil = false) String uuid, HttpServletResponse response) {
         try {
-            DocumentGetFileModel documentGetFileModel = documentMapper.toDocumentGetFileModel(uuid, response.getOutputStream());
+            DocumentGetFileModel documentGetFileModel = documentMapper.toDocumentGetFileModel(BusinessUtil.convertToUUID(uuid), response.getOutputStream());
             response.setContentType("application/pdf");
             documentService.getDocumentFile(documentGetFileModel);
             response.flushBuffer();
@@ -79,8 +82,8 @@ public class DocumentController {
     }
 
     @PostMapping(path = "/{uuid}/file", produces = "application/json")
-    public DocumentResponse updateDocumentFile(@PathVariable UUID uuid, @RequestParam("file") MultipartFile file) {
-        DocumentUpdateFileModel documentUpdateFileModel = documentMapper.toDocumentUpdateFileModel(uuid, file);
+    public DocumentResponse updateDocumentFile(@PathVariable @UUID(allowNil = false) String uuid, @RequestParam("file") @NotNull MultipartFile file) {
+        DocumentUpdateFileModel documentUpdateFileModel = documentMapper.toDocumentUpdateFileModel(BusinessUtil.convertToUUID(uuid), file);
         DocumentModel documentModel = documentService.updateDocumentFile(documentUpdateFileModel);
         log.info("Updated document-file {}", kv("uuid", documentModel.uuid()));
         return documentMapper.toDocumentResponse(documentModel);
@@ -88,8 +91,8 @@ public class DocumentController {
 
     @DeleteMapping(path = "/{uuid}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteDocument(@PathVariable UUID uuid) {
-        documentService.deleteDocument(new DocumentDeleteModel(uuid));
+    public void deleteDocument(@PathVariable @UUID(allowNil = false) String uuid) {
+        documentService.deleteDocument(new DocumentDeleteModel(BusinessUtil.convertToUUID(uuid)));
         log.info("Deleted document {}", kv("uuid", uuid));
     }
 }

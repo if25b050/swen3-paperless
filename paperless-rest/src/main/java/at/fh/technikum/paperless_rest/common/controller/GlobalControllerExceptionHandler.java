@@ -1,9 +1,9 @@
 package at.fh.technikum.paperless_rest.common.controller;
 
-import at.fh.technikum.paperless_rest.common.exception.DALObjectNotFoundException;
 import at.fh.technikum.paperless_common.business.exception.InvalidUUIDException;
-import at.fh.technikum.paperless_rest.common.exception.ModelValidationFailedException;
 import at.fh.technikum.paperless_common.business.exception.S3ObjectNotFoundException;
+import at.fh.technikum.paperless_rest.common.exception.DALObjectNotFoundException;
+import at.fh.technikum.paperless_rest.common.exception.ModelValidationFailedException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -12,6 +12,12 @@ import org.springframework.http.ProblemDetail;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.method.annotation.HandlerMethodValidationException;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
+
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 @ControllerAdvice
 @Slf4j
@@ -41,6 +47,25 @@ public class GlobalControllerExceptionHandler {
         return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
+    @ExceptionHandler(MissingServletRequestPartException.class)
+    public ProblemDetail handleMissingServlet(MissingServletRequestPartException ex) {
+        log.warn(ex.getMessage(), ex);
+        return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "Required part '" + ex.getRequestPartName() + "' is not missing.");
+    }
+
+    @ExceptionHandler(HandlerMethodValidationException.class)
+    public ProblemDetail handleMethodValidationException(HandlerMethodValidationException ex) {
+        log.warn(ex.getMessage(), ex);
+        Object[] errorResults = ex.getDetailMessageArguments();
+        if (errorResults.length > 0) {
+            String errors = Arrays.stream(errorResults)
+                    .map(Object::toString)
+                    .collect(Collectors.joining("\n"));
+            return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "There were issues with the request: \n" + errors);
+        }
+        return ex.getBody();
+    }
+
     @ExceptionHandler(DALObjectNotFoundException.class)
     public ProblemDetail handleNotFound(DALObjectNotFoundException ex) {
         log.warn(ex.getMessage());
@@ -49,6 +74,12 @@ public class GlobalControllerExceptionHandler {
 
     @ExceptionHandler(S3ObjectNotFoundException.class)
     public ProblemDetail handleNotFound(S3ObjectNotFoundException ex) {
+        log.warn(ex.getMessage());
+        return ProblemDetail.forStatus(HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ProblemDetail handleResourceNotFound(NoResourceFoundException ex) {
         log.warn(ex.getMessage());
         return ProblemDetail.forStatus(HttpStatus.NOT_FOUND);
     }
