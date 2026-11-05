@@ -2,7 +2,7 @@ import {ChangeDetectorRef, Component, inject, OnInit, signal, ViewChild} from '@
 import {DocumentService} from '../../service/document.service';
 import {LabelService} from '../../service/label.service';
 import {SearchService} from '../../service/search.service';
-import {ActivatedRoute, Router} from '@angular/router';
+import {ActivatedRoute, Router, RouterLink} from '@angular/router';
 import {DocumentResponse} from '../../dto/response/document-response';
 import {SearchResult} from '../../dto/search-result';
 import {PdfComponent} from '../pdf/pdf.component';
@@ -24,7 +24,8 @@ import {MatIcon} from '@angular/material/icon';
     FormsModule,
     CommonModule,
     MatIconButton,
-    MatIcon
+    MatIcon,
+    RouterLink
   ],
   templateUrl: './main.component.html',
   styleUrl: './main.component.scss',
