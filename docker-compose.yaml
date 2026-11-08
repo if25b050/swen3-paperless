@@ -5,6 +5,7 @@ services:
     restart: unless-stopped
     profiles:
       - frontend
+      - services
       - full
     environment:
       POSTGRES_USER: paperless
@@ -31,6 +32,9 @@ services:
       - full
     build:
       dockerfile: paperless-rest/rest.Dockerfile
+    env_file:
+      - paperless-common/.env
+      - paperless-rest/.env
     environment:
       DATABASE_URL: "jdbc:postgresql://db:5432/paperless"
       S3_URL: "http://rustfs:9000"
@@ -46,6 +50,8 @@ services:
       - full
     build:
       dockerfile: paperless-ocr/ocr.Dockerfile
+    env_file:
+      - paperless-common/.env
     environment:
       S3_URL: "http://rustfs:9000"
   frontend:
@@ -64,10 +70,14 @@ services:
     restart: unless-stopped
     profiles:
       - backend
+      - services
       - full
+    env_file:
+      - path: paperless-common/.env
+        required: true
     environment:
-      RABBITMQ_DEFAULT_USER: paperlessMQ
-      RABBITMQ_DEFAULT_PASS: paperlessMQ
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USERNAME}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
     ports:
       - "5672:5672" # Message Queue
       - "15672:15672" # Management-Plugin
@@ -82,20 +92,24 @@ services:
       - volume-permission-helper
     profiles:
       - backend
+      - services
       - full
     security_opt:
       - "no-new-privileges:true"
     ports:
       - "9000:9000" # S3 API port
       - "9001:9001" # Console port
+    env_file:
+      - path: paperless-common/.env
+        required: true
     environment:
       - RUSTFS_VOLUMES=/data/rustfs
       - RUSTFS_ADDRESS=0.0.0.0:9000
       - RUSTFS_CONSOLE_ADDRESS=0.0.0.0:9001
       - RUSTFS_CONSOLE_ENABLE=true
       - RUSTFS_CONSOLE_CORS_ALLOWED_ORIGINS=*
-      - RUSTFS_ACCESS_KEY=rustfspaperless # CHANGEME
-      - RUSTFS_SECRET_KEY=rustfspaperless # CHANGEME
+      - RUSTFS_ACCESS_KEY=${S3_ACCESSKEY}
+      - RUSTFS_SECRET_KEY=${S3_SECRETKEY}
       - RUSTFS_OBS_LOGGER_LEVEL=warn
       - RUSTFS_OBS_LOG_DIRECTORY=/app/logs
       # Keep strict disk topology checks enabled by default.

@@ -15,6 +15,7 @@ import {EditDocumentDialog} from '../edit-document/edit-document.dialog';
 import {EditDocumentDialogData} from '../edit-document/edit-document-dialog-data';
 import {MatIconButton} from '@angular/material/button';
 import {MatIcon} from '@angular/material/icon';
+import {HttpErrorResponse} from '@angular/common/http';
 
 
 @Component({
@@ -118,10 +119,7 @@ export class MainComponent implements OnInit {
     );
 
     if (existingGlobalLabel) {
-      this.assignLabelToDocument(
-        selectedFile.uuid,
-        existingGlobalLabel.uuid
-      );
+      this.assignLabelToDocument(existingGlobalLabel.uuid);
     } else {
       // Nur das neue Label erstellen und hinzufügen
       this.labelService.createLabel(trimmedValue).subscribe({
@@ -136,10 +134,7 @@ export class MainComponent implements OnInit {
 
           this.labels.push(newLabelOption);
 
-          this.assignLabelToDocument(
-            selectedFile.uuid,
-            createdLabel.uuid
-          );
+          this.assignLabelToDocument(createdLabel.uuid);
         },
         error: (err) => {
           console.error('Fehler beim Erstellen des Labels:', err);
@@ -160,7 +155,7 @@ export class MainComponent implements OnInit {
     );
   }
 
-  private assignLabelToDocument(documentUuid: string, labelUuid: string): void {
+  private assignLabelToDocument(labelUuid: string): void {
     const file = this.selectedFile();
 
     if (file) {
@@ -270,13 +265,16 @@ export class MainComponent implements OnInit {
       const selectedFile = this.selectedFile();
       if (selectedFile) {
         this.documentService.updateDocumentFile(selectedFile.uuid, file).subscribe({
-          next: response => {
+          next: () => {
             this.snackbar.open("Das Dokument wurde geupdatet.", "OK", {duration: 2500});
             this.pdfComponent.loadPdf(selectedFile)
           },
-          error: err => {
+          error: (err: HttpErrorResponse) => {
             // TODO Error Handling
             console.log(err);
+            if (err.status === 413) {
+              this.snackbar.open("Die Datei war zu groß!", "OK");
+            }
           }
         })
       } else {
@@ -293,9 +291,12 @@ export class MainComponent implements OnInit {
             // Dokumente neu laden, damit sie angezeigt werden
             this.reloadDocuments();
           },
-          error: err => {
+          error: (err: HttpErrorResponse) => {
             // TODO Error Handling
             console.log(err);
+            if (err.status === 413) {
+              this.snackbar.open("Die Datei war zu groß!", "OK");
+            }
           }
         });
       }
@@ -382,7 +383,7 @@ export class MainComponent implements OnInit {
     if (!selectedFile) return;
 
     this.documentService.deleteDocument(selectedFile.uuid).subscribe({
-      next: response => {
+      next: () => {
         this.snackbar.open("Das Dokument wurde gelöscht.", "OK", {duration: 2500});
         this.reloadDocuments();
       },

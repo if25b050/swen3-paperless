@@ -10,7 +10,7 @@ The backend requires the db-Docker to be started.
 
 Everything can also be started at once with:
 
-`docker compose --profile full up --build`
+`docker compose --profile full --env-file=./paperless-common/.env up --build`
 
 ## Architecture
 

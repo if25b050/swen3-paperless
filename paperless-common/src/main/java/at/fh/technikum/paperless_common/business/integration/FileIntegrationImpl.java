@@ -1,8 +1,8 @@
 package at.fh.technikum.paperless_common.business.integration;
 
 import at.fh.technikum.paperless_common.business.exception.S3ObjectNotFoundException;
+import at.fh.technikum.paperless_common.business.properties.S3Properties;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
@@ -28,21 +28,18 @@ public class FileIntegrationImpl implements FileIntegration {
     private final S3Client s3Client;
     private final String s3Bucket;
 
-    public FileIntegrationImpl(@Value("${s3.bucket}") String s3Bucket,
-                               @Value("${s3.url}") String s3Url,
-                               @Value("${s3.accesskey}") String s3Accesskey,
-                               @Value("${s3.secretkey}") String s3Secretkey) {
+    public FileIntegrationImpl(S3Properties s3Properties) {
 
-        this.s3Bucket = s3Bucket;
+        this.s3Bucket = s3Properties.getBucket();
 
         // create the Client
         try {
             s3Client = S3Client.builder()
-                    .endpointOverride(URI.create(s3Url))
+                    .endpointOverride(URI.create(s3Properties.getUrl()))
                     .region(Region.US_EAST_1) // RustFS default region
                     .credentialsProvider(
                             StaticCredentialsProvider.create(
-                                    AwsBasicCredentials.create(s3Accesskey, s3Secretkey)
+                                    AwsBasicCredentials.create(s3Properties.getAccesskey(), s3Properties.getSecretkey())
                             )
                     )
                     // RustFS uses path-style URLs by default; virtual-host style requires RUSTFS_SERVER_DOMAINS
