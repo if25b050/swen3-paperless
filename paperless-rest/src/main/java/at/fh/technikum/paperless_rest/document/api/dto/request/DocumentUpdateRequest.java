@@ -6,6 +6,6 @@ import jakarta.validation.constraints.Pattern;
 import java.util.List;
 
 public record DocumentUpdateRequest(
-        @NotBlank @Pattern(regexp = "^[\\w,\\s-]+\\.pdf$", message = "The file name does not allow special characters.") String name,
+        @NotBlank @Pattern(regexp = "^[\\w,\\s-]+\\.pdf$", message = "The file name does not allow special characters and end with .pdf.") String name,
         List<String> labels) {
 }
