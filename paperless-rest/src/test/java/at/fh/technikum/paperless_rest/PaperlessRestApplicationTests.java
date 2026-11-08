@@ -87,7 +87,7 @@ class PaperlessRestApplicationTests {
         LabelResponse label1 = createLabel("Label 1");
         LabelResponse label2 = createLabel("Label 2");
 
-        updateDocumentWithLabels(createResponse.uuid(), "Test File 2", label1.uuid(), label2.uuid());
+        updateDocumentWithLabels(createResponse.uuid(), "Test File 2.pdf", label1.uuid(), label2.uuid());
 
         // Test update file
         mvc.perform(multipart("/api/v1/documents/{0}/file", createResponse.uuid())
@@ -183,7 +183,7 @@ class PaperlessRestApplicationTests {
     }
 
     private DocumentResponse createTestDocument() throws Exception {
-        DocumentCreateModel documentCreateModel = new DocumentCreateModel("Test File", "This is File Content!".getBytes(StandardCharsets.UTF_8));
+        DocumentCreateModel documentCreateModel = new DocumentCreateModel("Test File.pdf", "This is File Content!".getBytes(StandardCharsets.UTF_8));
 
         MockMultipartFile file = new MockMultipartFile("file", documentCreateModel.name(),
                 MediaType.TEXT_PLAIN_VALUE, documentCreateModel.file());

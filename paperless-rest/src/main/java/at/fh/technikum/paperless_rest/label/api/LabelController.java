@@ -1,5 +1,6 @@
 package at.fh.technikum.paperless_rest.label.api;
 
+import at.fh.technikum.paperless_common.business.BusinessUtil;
 import at.fh.technikum.paperless_rest.document.api.dto.response.DocumentResponse;
 import at.fh.technikum.paperless_rest.document.business.DocumentMapper;
 import at.fh.technikum.paperless_rest.document.business.DocumentService;
@@ -11,12 +12,13 @@ import at.fh.technikum.paperless_rest.label.business.model.LabelCreateModel;
 import at.fh.technikum.paperless_rest.label.business.model.LabelDeleteModel;
 import at.fh.technikum.paperless_rest.label.business.model.LabelModel;
 import at.fh.technikum.paperless_rest.label.business.model.LabelUpdateModel;
+import jakarta.validation.constraints.NotBlank;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.validator.constraints.UUID;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.UUID;
 
 import static at.fh.technikum.paperless_common.business.BusinessUtil.kv;
 
@@ -45,15 +47,15 @@ public class LabelController {
     }
 
     @GetMapping(path = "/{uuid}", produces = "application/json")
-    public LabelResponse getLabel(@PathVariable UUID uuid) {
-        LabelModel label = labelService.getLabelById(uuid);
+    public LabelResponse getLabel(@PathVariable @UUID(allowNil = false) String uuid) {
+        LabelModel label = labelService.getLabelById(BusinessUtil.convertToUUID(uuid));
         log.info("Retrieve label {}", kv("uuid", uuid));
         return labelMapper.toResponse(label);
     }
 
     @GetMapping(path = "/{uuid}/documents", produces = "application/json")
-    public List<DocumentResponse> getDocumentsWithLabel(@PathVariable UUID uuid) {
-        List<DocumentModel> documentsModels = documentService.getDocumentsByLabel(uuid);
+    public List<DocumentResponse> getDocumentsWithLabel(@PathVariable @UUID(allowNil = false) String uuid) {
+        List<DocumentModel> documentsModels = documentService.getDocumentsByLabel(BusinessUtil.convertToUUID(uuid));
         log.info("Retrieved all {} documents with the label {}", kv("count", documentsModels.size()),
                 kv("uuid", uuid));
         return documentsModels.stream()
@@ -62,23 +64,23 @@ public class LabelController {
     }
 
     @PostMapping(consumes = "text/plain", produces = "application/json")
-    public LabelResponse createLabel(@RequestBody String newLabelName) {
+    public LabelResponse createLabel(@RequestBody @NotBlank String newLabelName) {
         LabelModel label = labelService.createLabel(new LabelCreateModel(newLabelName));
         log.info("Created label {} with {}", kv("uuid", label.uuid()), kv("name", label.name()));
         return labelMapper.toResponse(label);
     }
 
     @PutMapping(path = "/{uuid}", consumes = "text/plain", produces = "application/json")
-    public LabelResponse updateLabel(@PathVariable UUID uuid, @RequestBody String newLabelName) {
-        LabelModel label = labelService.updateLabel(new LabelUpdateModel(uuid, newLabelName));
+    public LabelResponse updateLabel(@PathVariable @UUID(allowNil = false) String uuid, @RequestBody @NotBlank String newLabelName) {
+        LabelModel label = labelService.updateLabel(new LabelUpdateModel(BusinessUtil.convertToUUID(uuid), newLabelName));
         log.info("Update label {} with {}", kv("uuid", label.uuid()), kv("name", label.name()));
         return labelMapper.toResponse(label);
     }
 
     @DeleteMapping(path = "/{uuid}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteLabel(@PathVariable UUID uuid) {
-        labelService.deleteLabel(new LabelDeleteModel(uuid));
+    public void deleteLabel(@PathVariable @UUID(allowNil = false) String uuid) {
+        labelService.deleteLabel(new LabelDeleteModel(BusinessUtil.convertToUUID(uuid)));
         log.info("Delete label {}", kv("uuid", uuid));
     }
 }
