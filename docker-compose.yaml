@@ -5,6 +5,7 @@ services:
     restart: unless-stopped
     profiles:
       - frontend
+      - backend
       - services
       - full
     environment:

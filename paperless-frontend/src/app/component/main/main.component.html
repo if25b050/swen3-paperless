@@ -110,6 +110,10 @@
           [disabled]="!selectedFile()"
         />
 
+        <button matIconButton title="Labels verwalten" (click)="openManageLablesDialog()">
+          <mat-icon>settings</mat-icon>
+        </button>
+
         <!-- Dropdown mit bestehenden Labels (wird beim Tippen gefiltert) -->
         @if (isLabelDropdownOpen && filteredLabels.length > 0) {
           <ul class="search-results-dropdown">
@@ -135,6 +139,7 @@
   <!-- Rechte Spalte -->
   <aside class="column right-column">
     <div class="label-list">
+      <h3>Labels</h3>
       @if (!selectedFile()) {
         <p class="empty-msg">
           No pdf selected. No labels can be displayed
@@ -154,6 +159,9 @@
           </ul>
         }
       }
+    </div>
+    <div class="document-properties">
+      <h3>Properties</h3>
     </div>
   </aside>
 </div>
