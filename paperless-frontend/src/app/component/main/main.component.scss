@@ -137,6 +137,7 @@
 
   /* Suchleisten oberhalb des PDFs */
   .search-bar-container {
+    display: flex;
     position: relative;
     padding: 15px 20px;
     background-color: #ffffff;
@@ -153,7 +154,7 @@
     }
 
     .search-input {
-      width: 100%;
+      width: calc(100% - 48px);
       padding: 10px 14px;
       border: 1px solid #d1d5db;
       border-radius: 8px;

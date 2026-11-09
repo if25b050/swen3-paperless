@@ -1,0 +1,42 @@
+<h2 mat-dialog-title>Labels verwalten</h2>
+<div mat-dialog-content>
+  <mat-list role="list">
+    @for (label of labels(); track label.uuid) {
+      <mat-list-item [class.editing]="currentlyEditedLabel?.uuid === label.uuid" role="listitem">
+        @if (currentlyEditedLabel?.uuid === label.uuid) {
+          <mat-form-field>
+            <mat-label>Name</mat-label>
+            <input #nameModel="ngModel" matInput [(ngModel)]="inputName" pattern="^[\w\s-]+$" required>
+            @if (nameModel.hasError('required')) {
+              <mat-error>Name wird benötigt</mat-error>
+            }
+            @if (nameModel.hasError('pattern')) {
+              <mat-error>Der Name enthält invalide Werte</mat-error>
+            }
+          </mat-form-field>
+          <button matIconButton [disabled]="nameModel.invalid" title="Änderung speichern"
+                  (click)="updateLabel(currentlyEditedLabel?.uuid, inputName)">
+            <mat-icon>save</mat-icon>
+          </button>
+          <button matIconButton title="Änderung abbrechen"
+                  (click)="currentlyEditedLabel = null; inputName = '';">
+            <mat-icon>cancel</mat-icon>
+          </button>
+        } @else {
+          <span class="item-name">{{ label.name }}</span>
+          <button matIconButton title="Label editieren" [disabled]="!!currentlyEditedLabel"
+                  (click)="currentlyEditedLabel = label; inputName = label.name;">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button matIconButton title="Label löschen" [disabled]="!!currentlyEditedLabel"
+                  (click)="deleteLabel(label)">
+            <mat-icon>delete</mat-icon>
+          </button>
+        }
+      </mat-list-item>
+    }
+  </mat-list>
+</div>
+<div mat-dialog-actions>
+  <button matButton [disabled]="!!currentlyEditedLabel" mat-dialog-close>Ok</button>
+</div>

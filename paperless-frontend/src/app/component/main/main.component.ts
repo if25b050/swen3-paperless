@@ -12,10 +12,10 @@ import {LabelOption} from '../../dto/label-option';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {MatDialog} from '@angular/material/dialog';
 import {EditDocumentDialog} from '../edit-document/edit-document.dialog';
-import {EditDocumentDialogData} from '../edit-document/edit-document-dialog-data';
 import {MatIconButton} from '@angular/material/button';
 import {MatIcon} from '@angular/material/icon';
 import {HttpErrorResponse} from '@angular/common/http';
+import {ManageLabelsDialog} from '../manage-labels/manage-labels.dialog';
 
 
 @Component({
@@ -369,7 +369,7 @@ export class MainComponent implements OnInit {
 
   editDocument(document: DocumentResponse | null): void {
     if (!document) return;
-    this.dialog.open<EditDocumentDialog, EditDocumentDialogData, DocumentResponse>(EditDocumentDialog, {data: document}).afterClosed().subscribe(result => {
+    this.dialog.open<EditDocumentDialog, DocumentResponse, DocumentResponse>(EditDocumentDialog, {data: document}).afterClosed().subscribe(result => {
       if (result) {
         document.name = result.name;
         this.cdr.detectChanges();
@@ -395,5 +395,13 @@ export class MainComponent implements OnInit {
 
     // Ausgewählte Datei zurücksetzen
     this.selectedFile.set(null);
+  }
+
+  openManageLablesDialog(): void {
+    this.dialog.open<ManageLabelsDialog>(ManageLabelsDialog).afterClosed().subscribe(() => {
+      this.reloadDocuments();
+      this.loadAllLabels();
+    });
+
   }
 }

@@ -3,7 +3,7 @@ package at.fh.technikum.paperless_rest.label.business;
 import at.fh.technikum.paperless_rest.label.api.response.LabelResponse;
 import at.fh.technikum.paperless_rest.label.business.model.LabelCreateModel;
 import at.fh.technikum.paperless_rest.label.business.model.LabelModel;
-import at.fh.technikum.paperless_rest.label.entity.LabelEntity;
+import at.fh.technikum.paperless_rest.label.dal.LabelEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

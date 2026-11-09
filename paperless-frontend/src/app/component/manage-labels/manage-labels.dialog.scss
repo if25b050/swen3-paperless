@@ -1,0 +1,11 @@
+.item-name {
+  display: inline-block;
+  width: 212px;
+}
+mat-list-item {
+  width: 330px;
+
+  &.editing {
+    height: 72px;
+  }
+}

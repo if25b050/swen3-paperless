@@ -6,7 +6,7 @@ import at.fh.technikum.paperless_rest.document.business.model.DocumentCreateMode
 import at.fh.technikum.paperless_rest.document.business.model.DocumentDeleteModel;
 import at.fh.technikum.paperless_rest.document.business.model.DocumentModel;
 import at.fh.technikum.paperless_rest.document.business.model.DocumentUpdateModel;
-import at.fh.technikum.paperless_rest.label.entity.LabelEntity;
+import at.fh.technikum.paperless_rest.label.dal.LabelEntity;
 import at.fh.technikum.paperless_rest.label.dal.LabelRepository;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
