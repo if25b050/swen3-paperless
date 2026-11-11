@@ -11,13 +11,14 @@ FROM node:${NODE_VERSION} AS builder
 WORKDIR /app
 
 # Copy package-related files first to leverage Docker's caching mechanism
-COPY ../package.json *package-lock.json* ./
+COPY paperless-frontend/package.json ./
+COPY paperless-frontend/package-lock.json ./
 
 # Install project dependencies using npm ci (ensures a clean, reproducible install)
 RUN --mount=type=cache,target=/root/.npm npm ci
 
 # Copy the rest of the application source code into the container
-COPY .. .
+COPY paperless-frontend .
 
 # Build the Angular application
 RUN npm run build
@@ -29,7 +30,7 @@ RUN npm run build
 FROM nginxinc/nginx-unprivileged:${NGINX_VERSION} AS runner
 
 # Copy custom Nginx config
-COPY nginx.conf /etc/nginx/nginx.conf
+COPY paperless-frontend/nginx.conf /etc/nginx/nginx.conf
 
 # Copy the static build output from the build stage to Nginx's default HTML serving directory
 COPY --chown=nginx:nginx --from=builder /app/dist/*/browser /usr/share/nginx/html
