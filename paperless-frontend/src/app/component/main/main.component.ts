@@ -296,6 +296,9 @@ export class MainComponent implements OnInit {
             console.log(err);
             if (err.status === 413) {
               this.snackbar.open("Die Datei war zu groß!", "OK");
+            } else {
+              this.snackbar.open("Es gab einen Fehler beim erstellen des Dokuments!", "OK");
+
             }
           }
         });
