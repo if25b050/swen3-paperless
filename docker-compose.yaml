@@ -32,7 +32,7 @@ services:
       - backend
       - full
     build:
-      dockerfile: paperless-rest/rest.Dockerfile
+      dockerfile: rest.Dockerfile
     env_file:
       - paperless-common/.env
       - paperless-rest/.env
@@ -50,7 +50,7 @@ services:
       - backend
       - full
     build:
-      dockerfile: paperless-ocr/ocr.Dockerfile
+      dockerfile: ocr.Dockerfile
     env_file:
       - paperless-common/.env
     environment:
@@ -61,7 +61,6 @@ services:
       - frontend
       - full
     build:
-      context: paperless-frontend
       dockerfile: frontend.Dockerfile
     ports:
       - "4200:8080"
