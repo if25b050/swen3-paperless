@@ -3,6 +3,7 @@ package at.fh.technikum.paperless_rest.document.business;
 import at.fh.technikum.paperless_common.business.exception.S3ObjectNotFoundException;
 import at.fh.technikum.paperless_common.business.integration.FileIntegration;
 import at.fh.technikum.paperless_common.business.integration.RabbitMQConfig;
+import at.fh.technikum.paperless_rest.common.dal.TransactionRollbackHelper;
 import at.fh.technikum.paperless_rest.common.exception.DALObjectNotFoundException;
 import at.fh.technikum.paperless_rest.common.model.ValidationModel;
 import at.fh.technikum.paperless_rest.document.business.model.*;
@@ -60,10 +61,9 @@ public class DocumentService {
         try {
             DocumentModel oldDocument = documentRepoService.getDocumentById(documentDeleteModel.uuid());
 
-            // TODO Lambda fuer Rollback logik mit verteilten Transaktionen
-            fileIntegration.deleteFile(oldDocument.uuid());
-
             documentRepoService.deleteDocument(documentDeleteModel);
+
+            fileIntegration.deleteFile(oldDocument.uuid());
         } catch (S3ObjectNotFoundException | DALObjectNotFoundException ex) {
             log.info("Document with {} was tried to be deleted, but was missing.", kv("uuid", documentDeleteModel.uuid()), ex);
         }
@@ -73,14 +73,14 @@ public class DocumentService {
     public DocumentModel createDocument(DocumentCreateModel documentCreateModel) {
         log.debug("Try to create document with {}", kv("name", documentCreateModel.name()));
         ValidationModel.validate(documentCreateModel);
-        // TODO Prevent non PDF-Files?
 
         DocumentModel document = documentRepoService.createDocument(documentCreateModel);
-        // TODO Lambda fuer Rollback logik mit verteilten Transaktionen
+
         fileIntegration.saveFile(document.uuid(), documentCreateModel.file());
+        TransactionRollbackHelper.registerRollbackFunction(() -> fileIntegration.deleteFile(document.uuid()));
 
         rabbitTemplate.convertAndSend(RabbitMQConfig.OCR_QUEUE, document.uuid().toString());
-        log.info("Sent OCR processing message to RabbitMQ for document uuid: {}", document.uuid());
+        log.info("Sent OCR processing message to RabbitMQ for document creation uuid: {}", document.uuid());
 
         return document;
     }
@@ -91,6 +91,9 @@ public class DocumentService {
         ValidationModel.validate(documentUpdateFileModel);
 
         fileIntegration.saveFile(documentUpdateFileModel.uuid(), documentUpdateFileModel.file());
+
+        rabbitTemplate.convertAndSend(RabbitMQConfig.OCR_QUEUE, documentUpdateFileModel.uuid().toString());
+        log.info("Sent OCR processing message to RabbitMQ for document update uuid: {}", documentUpdateFileModel.uuid());
 
         return documentRepoService.getDocumentById(documentUpdateFileModel.uuid());
     }
