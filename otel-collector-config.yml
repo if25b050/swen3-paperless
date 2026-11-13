@@ -11,7 +11,7 @@ processors:
 
 exporters:
   elasticsearch:
-    endpoints: ["http://es01:9200"]
+    endpoints: ["http://elasticsearch:9200"]
     # OTel logs, metrics, and traces map automatically to Elasticsearch indices
 
 service:
