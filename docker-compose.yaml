@@ -56,6 +56,7 @@ services:
     depends_on:
       - rustfs
       - rabbitmq
+      - otel-collector
     profiles:
       - backend
       - full
@@ -64,12 +65,23 @@ services:
     env_file:
       - paperless-common/.env
     environment:
+      JAVA_TOOL_OPTIONS: "-javaagent:/app/opentelemetry-javaagent.jar"
       S3_URL: "http://rustfs:9000"
+      OTEL_SERVICE_NAME: "paperless-ocr"
+      OTEL_EXPORTER_OTLP_ENDPOINT: "http://otel-collector:4318"
+      OTEL_METRICS_EXPORTER: "otlp"
+      OTEL_LOGS_EXPORTER: "otlp"
+      OTEL_TRACES_EXPORTER: "otlp"
+    volumes:
+      - ./agent/opentelemetry-javaagent.jar:/app/opentelemetry-javaagent.jar
+
   frontend:
     restart: unless-stopped
     profiles:
       - frontend
       - full
+    depends_on:
+      - backend
     build:
       dockerfile: frontend.Dockerfile
     ports:
@@ -181,12 +193,52 @@ services:
     container_name: elasticsearch
     environment:
       - discovery.type=single-node
-      - xpack.security.enabled=false
+      - xpack.security.enabled=true
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
     ports:
       - "9200:9200"
     volumes:
       - es_data:/usr/share/elasticsearch/data
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -s -u elastic:${ELASTIC_PASSWORD} http://localhost:9200/_cluster/health | grep -q '\"status\":\"green\"\\|\"status\":\"yellow\"'" ]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+
+  es-setup:
+    image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION}
+    container_name: es-setup
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    command:
+      - /bin/bash
+      - -c
+      - |
+        curl -X POST -u elastic:${ELASTIC_PASSWORD} "http://elasticsearch:9200/_security/user/kibana_system/_password" \
+        -H "Content-Type: application/json" \
+        -d '{"password":"${KIBANA_PASSWORD}"}'
+        # Create role with permissions to manage and write to OTel data streams/indices
+        curl -X POST -u elastic:${ELASTIC_PASSWORD} "http://elasticsearch:9200/_security/role/otel_writer_role" \
+          -H "Content-Type: application/json" \
+          -d '{
+            "cluster": ["manage_index_templates", "monitor"],
+            "indices": [
+              {
+                "names": ["logs-*", "metrics-*", "traces-*", "springboot-logs-*", "otel-*"],
+                "privileges": ["create_doc", "create_index", "auto_configure", "write", "manage"]
+              }
+            ]
+          }'
+        # Create the otel user
+        curl -X POST -u elastic:${ELASTIC_PASSWORD} "http://elasticsearch:9200/_security/user/${OTEL_ELASTIC_USER}" \
+          -H "Content-Type: application/json" \
+          -d '{
+            "password": "${OTEL_ELASTIC_PASSWORD}",
+            "roles": ["otel_writer_role"]
+          }'
+  
 
   kibana:
     image: docker.elastic.co/kibana/kibana:${STACK_VERSION}
@@ -195,20 +247,26 @@ services:
       - "5601:5601"
     environment:
       - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - ELASTICSEARCH_USERNAME=kibana_system
+      - ELASTICSEARCH_PASSWORD=${KIBANA_PASSWORD}
+      - XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY=${KIBANA_ENCRYPTION_KEY}
     depends_on:
       - elasticsearch
 
   otel-collector:
     image: otel/opentelemetry-collector-contrib:0.165.0
     container_name: otel-collector
-    command: ["--config=/etc/otel-collector-config.yml"]
+    environment:
+      OTEL_ELASTIC_USER: ${OTEL_ELASTIC_USER}
+      OTEL_ELASTIC_PASSWORD: ${OTEL_ELASTIC_PASSWORD}
+    command: [ "--config=/etc/otel-collector-config.yml" ]
     volumes:
       - ./otel-collector-config.yml:/etc/otel-collector-config.yml
     ports:
       - "4317:4317" # OTLP gRPC receiver
       - "4318:4318" # OTLP HTTP receiver
     depends_on:
-      - elasticsearch
+      - es-setup
 
 volumes:
   db:

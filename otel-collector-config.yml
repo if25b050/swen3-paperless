@@ -6,25 +6,35 @@ receivers:
       http:
         endpoint: 0.0.0.0:4318
 
+extensions:
+  basicauth/elastic_auth:
+    client_auth:
+      username: ${OTEL_ELASTIC_USER}
+      password: ${OTEL_ELASTIC_PASSWORD}
+
 processors:
+  cumulativetodelta:
   batch:
 
 exporters:
   elasticsearch:
-    endpoints: ["http://elasticsearch:9200"]
+    endpoints: [ "http://elasticsearch:9200" ]
+    auth:
+      authenticator: basicauth/elastic_auth
     # OTel logs, metrics, and traces map automatically to Elasticsearch indices
 
 service:
+  extensions: [ basicauth/elastic_auth ]
   pipelines:
     traces:
-      receivers: [otlp]
-      processors: [batch]
-      exporters: [elasticsearch]
+      receivers: [ otlp ]
+      processors: [ batch ]
+      exporters: [ elasticsearch ]
     metrics:
-      receivers: [otlp]
-      processors: [batch]
-      exporters: [elasticsearch]
+      receivers: [ otlp ]
+      processors: [ cumulativetodelta, batch ]
+      exporters: [ elasticsearch ]
     logs:
-      receivers: [otlp]
-      processors: [batch]
-      exporters: [elasticsearch]
+      receivers: [ otlp ]
+      processors: [ batch ]
+      exporters: [ elasticsearch ]
