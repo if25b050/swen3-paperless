@@ -238,6 +238,62 @@ services:
             "password": "${OTEL_ELASTIC_PASSWORD}",
             "roles": ["otel_writer_role"]
           }'
+        # Setup the document ocr index
+        curl -X PUT -u elastic:${ELASTIC_PASSWORD} "http://elasticsearch:9200/paperless-document-index" \
+          -H "Content-Type: application/json" \
+          -d '{
+              "mappings": {
+                "properties": {
+                  "id": {"type": "keyword"},
+                  "text-content": {"type": "text"},
+                  "@timestamp": {"type": "date"}
+                }
+              }
+            }'
+        # Create role with write permissions to the document ocr index
+        curl -X POST -u elastic:${ELASTIC_PASSWORD} "http://elasticsearch:9200/_security/role/paperless_writer_role" \
+          -H "Content-Type: application/json" \
+          -d '{
+            "indices": [
+              {
+                "names": ["paperless-document-index"],
+                "privileges": ["read", "write"]
+              }
+            ]
+          }'
+        # Create role with read permissions to the document ocr index
+        curl -X POST -u elastic:${ELASTIC_PASSWORD} "http://elasticsearch:9200/_security/role/paperless_reader_role" \
+          -H "Content-Type: application/json" \
+          -d '{
+            "indices": [
+              {
+                "names": ["paperless-document-index"],
+                "privileges": ["read"]
+              }
+            ]
+          }'
+        # Create the ocr user
+        curl -X POST -u elastic:${ELASTIC_PASSWORD} "http://elasticsearch:9200/_security/user/${OCR_ELASTIC_USER}" \
+          -H "Content-Type: application/json" \
+          -d '{
+            "password": "${OCR_ELASTIC_PASSWORD}",
+            "roles": ["paperless_writer_role"]
+          }'
+        # Create the genAi user
+        curl -X POST -u elastic:${ELASTIC_PASSWORD} "http://elasticsearch:9200/_security/user/${GEN_ELASTIC_USER}" \
+          -H "Content-Type: application/json" \
+          -d '{
+            "password": "${GEN_ELASTIC_PASSWORD}",
+            "roles": ["paperless_writer_role"]
+          }'
+        # Create the rest user
+        curl -X POST -u elastic:${ELASTIC_PASSWORD} "http://elasticsearch:9200/_security/user/${REST_ELASTIC_USER}" \
+          -H "Content-Type: application/json" \
+          -d '{
+            "password": "${REST_ELASTIC_PASSWORD}",
+            "roles": ["paperless_writer_role"]
+          }'
+  
   
 
   kibana:
