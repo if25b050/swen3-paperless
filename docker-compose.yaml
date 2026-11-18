@@ -245,8 +245,7 @@ services:
               "mappings": {
                 "properties": {
                   "id": {"type": "keyword"},
-                  "text-content": {"type": "text"},
-                  "@timestamp": {"type": "date"}
+                  "content": {"type": "text"}
                 }
               }
             }'
