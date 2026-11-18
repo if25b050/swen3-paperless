@@ -22,12 +22,14 @@ services:
       interval: 30s
       timeout: 10s
       retries: 5
+
   backend:
     restart: unless-stopped
     depends_on:
       - db
       - rustfs
       - rabbitmq
+      - otel-collector
     profiles:
       - backend
       - full
@@ -39,6 +41,14 @@ services:
     environment:
       DATABASE_URL: "jdbc:postgresql://db:5432/paperless"
       S3_URL: "http://rustfs:9000"
+      JAVA_TOOL_OPTIONS: "-javaagent:/app/opentelemetry-javaagent.jar"
+      OTEL_SERVICE_NAME: "paperless-rest"
+      OTEL_EXPORTER_OTLP_ENDPOINT: "http://otel-collector:4318"
+      OTEL_METRICS_EXPORTER: "otlp"
+      OTEL_LOGS_EXPORTER: "otlp"
+      OTEL_TRACES_EXPORTER: "otlp"
+    volumes:
+      - ./agent/opentelemetry-javaagent.jar:/app/opentelemetry-javaagent.jar
     ports:
       - "8080:8080"
   ocr:
@@ -46,6 +56,7 @@ services:
     depends_on:
       - rustfs
       - rabbitmq
+      - otel-collector
     profiles:
       - backend
       - full
@@ -54,12 +65,23 @@ services:
     env_file:
       - paperless-common/.env
     environment:
+      JAVA_TOOL_OPTIONS: "-javaagent:/app/opentelemetry-javaagent.jar"
       S3_URL: "http://rustfs:9000"
+      OTEL_SERVICE_NAME: "paperless-ocr"
+      OTEL_EXPORTER_OTLP_ENDPOINT: "http://otel-collector:4318"
+      OTEL_METRICS_EXPORTER: "otlp"
+      OTEL_LOGS_EXPORTER: "otlp"
+      OTEL_TRACES_EXPORTER: "otlp"
+    volumes:
+      - ./agent/opentelemetry-javaagent.jar:/app/opentelemetry-javaagent.jar
+
   frontend:
     restart: unless-stopped
     profiles:
       - frontend
       - full
+    depends_on:
+      - backend
     build:
       dockerfile: frontend.Dockerfile
     ports:
@@ -81,7 +103,7 @@ services:
     ports:
       - "5672:5672" # Message Queue
       - "15672:15672" # Management-Plugin
-#      - "15692:15692" # Prometheus-Metrics
+    #      - "15692:15692" # Prometheus-Metrics
     volumes:
       - rabbitmq-lib:/var/lib/rabbitmq/
       - rabbitmq-log:/var/log/rabbitmq
@@ -166,9 +188,147 @@ services:
       "
     restart: "no"
 
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION}
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=true
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ports:
+      - "9200:9200"
+    volumes:
+      - es_data:/usr/share/elasticsearch/data
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -s -u elastic:${ELASTIC_PASSWORD} http://localhost:9200/_cluster/health | grep -q '\"status\":\"green\"\\|\"status\":\"yellow\"'" ]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+
+  es-setup:
+    image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION}
+    container_name: es-setup
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    command:
+      - /bin/bash
+      - -c
+      - |
+        curl -X POST -u elastic:${ELASTIC_PASSWORD} "http://elasticsearch:9200/_security/user/kibana_system/_password" \
+        -H "Content-Type: application/json" \
+        -d '{"password":"${KIBANA_PASSWORD}"}'
+        # Create role with permissions to manage and write to OTel data streams/indices
+        curl -X POST -u elastic:${ELASTIC_PASSWORD} "http://elasticsearch:9200/_security/role/otel_writer_role" \
+          -H "Content-Type: application/json" \
+          -d '{
+            "cluster": ["manage_index_templates", "monitor"],
+            "indices": [
+              {
+                "names": ["logs-*", "metrics-*", "traces-*", "springboot-logs-*", "otel-*"],
+                "privileges": ["create_doc", "create_index", "auto_configure", "write", "manage"]
+              }
+            ]
+          }'
+        # Create the otel user
+        curl -X POST -u elastic:${ELASTIC_PASSWORD} "http://elasticsearch:9200/_security/user/${OTEL_ELASTIC_USER}" \
+          -H "Content-Type: application/json" \
+          -d '{
+            "password": "${OTEL_ELASTIC_PASSWORD}",
+            "roles": ["otel_writer_role"]
+          }'
+        # Setup the document ocr index
+        curl -X PUT -u elastic:${ELASTIC_PASSWORD} "http://elasticsearch:9200/paperless-document-index" \
+          -H "Content-Type: application/json" \
+          -d '{
+              "mappings": {
+                "properties": {
+                  "id": {"type": "keyword"},
+                  "text-content": {"type": "text"},
+                  "@timestamp": {"type": "date"}
+                }
+              }
+            }'
+        # Create role with write permissions to the document ocr index
+        curl -X POST -u elastic:${ELASTIC_PASSWORD} "http://elasticsearch:9200/_security/role/paperless_writer_role" \
+          -H "Content-Type: application/json" \
+          -d '{
+            "indices": [
+              {
+                "names": ["paperless-document-index"],
+                "privileges": ["read", "write"]
+              }
+            ]
+          }'
+        # Create role with read permissions to the document ocr index
+        curl -X POST -u elastic:${ELASTIC_PASSWORD} "http://elasticsearch:9200/_security/role/paperless_reader_role" \
+          -H "Content-Type: application/json" \
+          -d '{
+            "indices": [
+              {
+                "names": ["paperless-document-index"],
+                "privileges": ["read"]
+              }
+            ]
+          }'
+        # Create the ocr user
+        curl -X POST -u elastic:${ELASTIC_PASSWORD} "http://elasticsearch:9200/_security/user/${OCR_ELASTIC_USER}" \
+          -H "Content-Type: application/json" \
+          -d '{
+            "password": "${OCR_ELASTIC_PASSWORD}",
+            "roles": ["paperless_writer_role"]
+          }'
+        # Create the genAi user
+        curl -X POST -u elastic:${ELASTIC_PASSWORD} "http://elasticsearch:9200/_security/user/${GEN_ELASTIC_USER}" \
+          -H "Content-Type: application/json" \
+          -d '{
+            "password": "${GEN_ELASTIC_PASSWORD}",
+            "roles": ["paperless_writer_role"]
+          }'
+        # Create the rest user
+        curl -X POST -u elastic:${ELASTIC_PASSWORD} "http://elasticsearch:9200/_security/user/${REST_ELASTIC_USER}" \
+          -H "Content-Type: application/json" \
+          -d '{
+            "password": "${REST_ELASTIC_PASSWORD}",
+            "roles": ["paperless_writer_role"]
+          }'
+  
+  
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:${STACK_VERSION}
+    container_name: kibana
+    ports:
+      - "5601:5601"
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - ELASTICSEARCH_USERNAME=kibana_system
+      - ELASTICSEARCH_PASSWORD=${KIBANA_PASSWORD}
+      - XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY=${KIBANA_ENCRYPTION_KEY}
+    depends_on:
+      - elasticsearch
+
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.165.0
+    container_name: otel-collector
+    environment:
+      OTEL_ELASTIC_USER: ${OTEL_ELASTIC_USER}
+      OTEL_ELASTIC_PASSWORD: ${OTEL_ELASTIC_PASSWORD}
+    command: [ "--config=/etc/otel-collector-config.yml" ]
+    volumes:
+      - ./otel-collector-config.yml:/etc/otel-collector-config.yml
+    ports:
+      - "4317:4317" # OTLP gRPC receiver
+      - "4318:4318" # OTLP HTTP receiver
+    depends_on:
+      - es-setup
+
 volumes:
   db:
   rustfs_data:
   rustfs_logs:
   rabbitmq-lib:
   rabbitmq-log:
+  es_data:
+

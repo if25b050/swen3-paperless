@@ -3,6 +3,7 @@ package at.fh.technikum.paperless_common.business.integration;
 import at.fh.technikum.paperless_common.business.exception.S3ObjectNotFoundException;
 import at.fh.technikum.paperless_common.business.properties.S3Properties;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
@@ -23,6 +24,7 @@ import static at.fh.technikum.paperless_common.business.BusinessUtil.kv;
 
 @Service
 @Slf4j
+@EnableConfigurationProperties(S3Properties.class)
 public class FileIntegrationImpl implements FileIntegration {
 
     private final S3Client s3Client;
@@ -34,6 +36,7 @@ public class FileIntegrationImpl implements FileIntegration {
 
         // create the Client
         try {
+            log.info("Try connecting to S3");
             s3Client = S3Client.builder()
                     .endpointOverride(URI.create(s3Properties.getUrl()))
                     .region(Region.US_EAST_1) // RustFS default region
@@ -55,9 +58,9 @@ public class FileIntegrationImpl implements FileIntegration {
         // Create bucket
         try {
             s3Client.createBucket(CreateBucketRequest.builder().bucket(s3Bucket).build());
-            System.out.println("Bucket created: " + s3Bucket);
+            log.info("Bucket created: {}", s3Bucket);
         } catch (BucketAlreadyExistsException | BucketAlreadyOwnedByYouException e) {
-            System.out.println("Bucket \"" + s3Bucket + "\" already exists.");
+            log.info("Bucket \"{}\" already exists.", s3Bucket);
         }
     }
 
