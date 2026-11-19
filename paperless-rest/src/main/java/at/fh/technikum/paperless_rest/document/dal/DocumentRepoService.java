@@ -2,10 +2,7 @@ package at.fh.technikum.paperless_rest.document.dal;
 
 import at.fh.technikum.paperless_rest.common.exception.DALObjectNotFoundException;
 import at.fh.technikum.paperless_rest.document.business.DocumentMapper;
-import at.fh.technikum.paperless_rest.document.business.model.DocumentCreateModel;
-import at.fh.technikum.paperless_rest.document.business.model.DocumentDeleteModel;
-import at.fh.technikum.paperless_rest.document.business.model.DocumentModel;
-import at.fh.technikum.paperless_rest.document.business.model.DocumentUpdateModel;
+import at.fh.technikum.paperless_rest.document.business.model.*;
 import at.fh.technikum.paperless_rest.label.dal.LabelEntity;
 import at.fh.technikum.paperless_rest.label.dal.LabelRepository;
 import org.springframework.dao.OptimisticLockingFailureException;
@@ -57,6 +54,28 @@ public class DocumentRepoService {
             List<LabelEntity> foundLabels = labelRepository.findAllById(labelUuids);
             documentEntity.getLabels().addAll(foundLabels);
         }
+
+        documentEntity = documentRepository.save(documentEntity);
+
+        return documentMapper.toDocumentModel(documentEntity);
+    }
+
+    public DocumentModel updateDocument(DocumentUpdateStatusModel documentUpdateStatusModel) {
+        DocumentEntity documentEntity = documentRepository.findById(documentUpdateStatusModel.uuid())
+                .orElseThrow(() -> new DALObjectNotFoundException("Document with uuid: " + documentUpdateStatusModel.uuid() + " not found."));
+
+        documentEntity.setStatus(documentUpdateStatusModel.status());
+
+        documentEntity = documentRepository.save(documentEntity);
+
+        return documentMapper.toDocumentModel(documentEntity);
+    }
+
+    public DocumentModel updateDocument(DocumentUpdateAiSummaryModel documentUpdateAiSummaryModel) {
+        DocumentEntity documentEntity = documentRepository.findById(documentUpdateAiSummaryModel.uuid())
+                .orElseThrow(() -> new DALObjectNotFoundException("Document with uuid: " + documentUpdateAiSummaryModel.uuid() + " not found."));
+
+        documentEntity.setAiSummary(documentUpdateAiSummaryModel.aiSummary());
 
         documentEntity = documentRepository.save(documentEntity);
 

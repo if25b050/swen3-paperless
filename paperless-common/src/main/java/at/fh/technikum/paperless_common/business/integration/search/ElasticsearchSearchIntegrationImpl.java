@@ -25,7 +25,7 @@ import static at.fh.technikum.paperless_common.business.BusinessUtil.kv;
 @EnableConfigurationProperties(ElasticsearchProperties.class)
 public class ElasticsearchSearchIntegrationImpl implements SearchIntegration {
 
-    private final String INDEX_NAME = "paperless-document-index";
+    private final String DOCUMENT_INDEX_NAME = "paperless-document-index";
     private final ElasticsearchProperties elasticsearchProperties;
 
     public ElasticsearchSearchIntegrationImpl(ElasticsearchProperties properties) {
@@ -59,7 +59,7 @@ public class ElasticsearchSearchIntegrationImpl implements SearchIntegration {
         try (ElasticsearchClient esClient = createEsClient()) {
 
             SearchResponse<ElasticsearchDocument> result = esClient.search(s -> s
-                            .index(INDEX_NAME)
+                            .index(DOCUMENT_INDEX_NAME)
                             .query(q -> q
                                     .match(t -> t
                                             .field("content")
@@ -86,7 +86,7 @@ public class ElasticsearchSearchIntegrationImpl implements SearchIntegration {
     public String getContent(UUID uuid) {
         try (ElasticsearchClient esClient = createEsClient()) {
             GetResponse<ElasticsearchDocument> elasticsearchDocumentGetResponse = esClient.get(g -> g
-                            .index(INDEX_NAME)
+                            .index(DOCUMENT_INDEX_NAME)
                             .id(uuid.toString()),
                     ElasticsearchDocument.class);
 
@@ -110,7 +110,7 @@ public class ElasticsearchSearchIntegrationImpl implements SearchIntegration {
             ElasticsearchDocument document = new ElasticsearchDocument(uuid, content);
 
             IndexResponse response = esClient.index(i -> i
-                    .index(INDEX_NAME)
+                    .index(DOCUMENT_INDEX_NAME)
                     .id(uuid.toString())
                     .document(document));
 
@@ -125,6 +125,7 @@ public class ElasticsearchSearchIntegrationImpl implements SearchIntegration {
         try (ElasticsearchClient esClient = createEsClient()) {
 
             DeleteResponse response = esClient.delete(d -> d
+                    .index(DOCUMENT_INDEX_NAME)
                     .id(uuid.toString()));
 
             log.info("Deleted indexed document-content {}", kv("uuid", uuid));

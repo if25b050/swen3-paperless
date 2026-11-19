@@ -9,6 +9,8 @@ import java.util.List;
 
 public record DocumentResponse(@UUID(allowNil = false) String uuid,
                                @NotBlank @Pattern(regexp = "^[\\w,\\s-]+\\.pdf$") String name,
-                               List<LabelModel> labels) {
+                               List<LabelModel> labels,
+                               @NotBlank String status,
+                               String aiSummary) {
 
 }

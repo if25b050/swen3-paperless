@@ -1,6 +1,7 @@
 package at.fh.technikum.paperless_rest;
 
 import at.fh.technikum.paperless_common.business.integration.FileIntegration;
+import at.fh.technikum.paperless_common.business.integration.search.SearchIntegration;
 import at.fh.technikum.paperless_rest.document.api.dto.request.DocumentUpdateRequest;
 import at.fh.technikum.paperless_rest.document.api.dto.response.DocumentResponse;
 import at.fh.technikum.paperless_rest.document.business.model.DocumentCreateModel;
@@ -40,6 +41,8 @@ class PaperlessRestApplicationTests {
     private FileIntegration fileIntegration; // Mock the file-integration for testing
     @MockitoBean
     private RabbitTemplate queueIntegration; // Mock the queue-integration for testing
+    @MockitoBean
+    private SearchIntegration searchIntegration; // Mock the search-integration for testing
 
     @Autowired
     private DocumentRepository documentRepository;
@@ -101,7 +104,6 @@ class PaperlessRestApplicationTests {
                 .andExpect(
                         jsonPath("$.detail").value("File is required.")
                 );
-        // TODO Test file content after update
 
         // Test delete file
         mvc.perform(delete("/api/v1/documents/{0}", createResponse.uuid()))

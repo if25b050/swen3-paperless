@@ -6,7 +6,8 @@ import at.fh.technikum.paperless_rest.label.business.model.LabelModel;
 import java.util.List;
 import java.util.UUID;
 
-public record DocumentModel(UUID uuid, String name, List<LabelModel> labels) implements ValidationModel {
+public record DocumentModel(UUID uuid, String name, List<LabelModel> labels, DocumentStatus status,
+                            String aiSummary) implements ValidationModel {
 
     @Override
     public String validationLogic() {
@@ -15,6 +16,9 @@ public record DocumentModel(UUID uuid, String name, List<LabelModel> labels) imp
         }
         if (uuid == null || uuid.toString().isBlank()) {
             return "UUID is required.";
+        }
+        if (status == null) {
+            return "Status is required.";
         }
         return "";
     }
