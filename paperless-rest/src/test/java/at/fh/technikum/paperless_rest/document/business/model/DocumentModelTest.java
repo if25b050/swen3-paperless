@@ -20,7 +20,7 @@ class DocumentModelTest {
     @DisplayName("Return Name is required when name is empty")
     void returnNameIsRequired(String name) {
         // Given
-        DocumentModel model = new DocumentModel(UUID.randomUUID(), name, labels);
+        DocumentModel model = new DocumentModel(UUID.randomUUID(), name, labels, DocumentStatus.GEN_AI_FINISHED, "TEST");
 
         // When
         String validationResult = model.validationLogic();
@@ -33,7 +33,7 @@ class DocumentModelTest {
     @DisplayName("Return name is required when name is null")
     void returnNameIsRequiredNull() {
         // Given
-        DocumentModel model = new DocumentModel(UUID.randomUUID(), null, labels);
+        DocumentModel model = new DocumentModel(UUID.randomUUID(), null, labels, DocumentStatus.GEN_AI_FINISHED, "TEST");
 
         // When
         String validationResult = model.validationLogic();
@@ -46,12 +46,12 @@ class DocumentModelTest {
     @DisplayName("Return empty string when everything is valid")
     void returnEmptyStringWhenEverythingIsValid() {
         // Given
-        DocumentModel model = new DocumentModel(UUID.randomUUID(), "Josef", labels);
-
-        // Then
-        String validationResult = model.validationLogic();
+        DocumentModel model = new DocumentModel(UUID.randomUUID(), "Josef", labels, DocumentStatus.GEN_AI_FINISHED, "TEST");
 
         // When
+        String validationResult = model.validationLogic();
+
+        // Then
         assertThat(validationResult).isEqualTo("");
     }
 }

@@ -1,5 +1,6 @@
 package at.fh.technikum.paperless_rest.search.business;
 
+import at.fh.technikum.paperless_common.business.integration.search.SearchIntegration;
 import at.fh.technikum.paperless_rest.common.model.ValidationModel;
 import at.fh.technikum.paperless_rest.document.business.model.DocumentModel;
 import at.fh.technikum.paperless_rest.document.dal.DocumentRepoService;
@@ -10,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Locale;
 
 import static at.fh.technikum.paperless_common.business.BusinessUtil.kv;
 
@@ -33,7 +35,8 @@ public class SearchService {
 
         List<DocumentModel> allDocuments = documentRepoService.getAllDocuments();
         List<DocumentModel> filteredList = allDocuments.stream()
-                .filter(d -> d.name().contains(searchModel.search()))
+                .filter(d -> d.name().toLowerCase(Locale.ROOT)
+                        .contains(searchModel.search().toLowerCase(Locale.ROOT)))
                 .toList();
 
         return new DocumentSearchResultModel(filteredList, new SearchPagingModel(0, 0));

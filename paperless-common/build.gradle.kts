@@ -32,7 +32,7 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testAnnotationProcessor("org.projectlombok:lombok")
     implementation("software.amazon.awssdk:s3:2.55.11")
-
+    implementation("co.elastic.clients:elasticsearch-java:9.5.6")
 }
 
 tasks.withType<Test> {

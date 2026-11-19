@@ -1,6 +1,7 @@
 package at.fh.technikum.paperless_rest.document.dal;
 
 import at.fh.technikum.paperless_rest.common.dal.AuditedEntity;
+import at.fh.technikum.paperless_rest.document.business.model.DocumentStatus;
 import at.fh.technikum.paperless_rest.label.dal.LabelEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -25,18 +26,27 @@ public class DocumentEntity extends AuditedEntity {
     @JoinTable
     private Set<LabelEntity> labels = new HashSet<>();
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private DocumentStatus status;
+
+    @Column
+    private String aiSummary;
+
     public DocumentEntity() {
+        status = DocumentStatus.NEW;
     }
 
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         DocumentEntity that = (DocumentEntity) o;
-        return Objects.equals(getUuid(), that.getUuid()) && Objects.equals(name, that.name) && Objects.equals(labels, that.labels);
+        return Objects.equals(getUuid(), that.getUuid()) && Objects.equals(name, that.name) && Objects.equals(labels, that.labels)
+                && Objects.equals(status, that.status) && Objects.equals(aiSummary, that.aiSummary);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getUuid(), name, labels);
+        return Objects.hash(getUuid(), name, labels, status, aiSummary);
     }
 }

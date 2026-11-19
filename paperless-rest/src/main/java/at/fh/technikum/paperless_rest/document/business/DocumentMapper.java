@@ -37,6 +37,8 @@ public abstract class DocumentMapper {
 
     @Mapping(target = "uuid", ignore = true)
     @Mapping(target = "labels", ignore = true)
+    @Mapping(target = "status", ignore = true)
+    @Mapping(target = "aiSummary", ignore = true)
     @Mapping(target = "createdDate", ignore = true)
     @Mapping(target = "modifiedDate", ignore = true)
     @Mapping(target = "version", ignore = true)

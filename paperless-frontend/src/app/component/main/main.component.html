@@ -138,13 +138,9 @@
 
   <!-- Rechte Spalte -->
   <aside class="column right-column">
-    <div class="label-list">
-      <h3>Labels</h3>
-      @if (!selectedFile()) {
-        <p class="empty-msg">
-          No pdf selected. No labels can be displayed
-        </p>
-      } @else {
+    @if (selectedFile()) {
+      <div class="label-list">
+        <h3>Labels</h3>
         @if (!selectedFile()?.labels?.length) {
           <p class="empty-msg">
             Keine Labels für dieses Dokument vorhanden
@@ -158,10 +154,21 @@
             }
           </ul>
         }
-      }
-    </div>
-    <div class="document-properties">
-      <h3>Properties</h3>
-    </div>
+      </div>
+      <div class="document-properties">
+        <h3>Properties</h3>
+        <div>
+          <strong>Status: </strong> {{ selectedFile()?.status }}
+        </div>
+        <div>
+          <strong>AI-Zusammenfassung:</strong>
+          @if (selectedFile()?.status != 'GEN_AI_FINISHED') {
+            <div>Zusammenfassung wird noch generiert.</div>
+          } @else {
+            <div>{{ selectedFile()?.aiSummary }}</div>
+          }
+        </div>
+      </div>
+    }
   </aside>
 </div>

@@ -3,6 +3,7 @@ package at.fh.technikum.paperless_rest.document.business;
 import at.fh.technikum.paperless_common.business.exception.S3ObjectNotFoundException;
 import at.fh.technikum.paperless_common.business.integration.FileIntegration;
 import at.fh.technikum.paperless_common.business.integration.RabbitMQConfig;
+import at.fh.technikum.paperless_common.business.integration.search.SearchIntegration;
 import at.fh.technikum.paperless_rest.common.dal.TransactionRollbackHelper;
 import at.fh.technikum.paperless_rest.common.exception.DALObjectNotFoundException;
 import at.fh.technikum.paperless_rest.common.model.ValidationModel;
@@ -24,11 +25,13 @@ public class DocumentService {
     private final DocumentRepoService documentRepoService;
     private final FileIntegration fileIntegration;
     private final RabbitTemplate rabbitTemplate;
+    private final SearchIntegration searchIntegration;
 
-    public DocumentService(DocumentRepoService documentRepoService, FileIntegration fileIntegration, RabbitTemplate rabbitTemplate) {
+    public DocumentService(DocumentRepoService documentRepoService, FileIntegration fileIntegration, RabbitTemplate rabbitTemplate, SearchIntegration searchIntegration) {
         this.documentRepoService = documentRepoService;
         this.fileIntegration = fileIntegration;
         this.rabbitTemplate = rabbitTemplate;
+        this.searchIntegration = searchIntegration;
     }
 
     public DocumentModel getDocumentById(UUID uuid) {
@@ -64,6 +67,8 @@ public class DocumentService {
             documentRepoService.deleteDocument(documentDeleteModel);
 
             fileIntegration.deleteFile(oldDocument.uuid());
+
+            searchIntegration.deleteDocument(documentDeleteModel.uuid());
         } catch (S3ObjectNotFoundException | DALObjectNotFoundException ex) {
             log.info("Document with {} was tried to be deleted, but was missing.", kv("uuid", documentDeleteModel.uuid()), ex);
         }
@@ -79,7 +84,7 @@ public class DocumentService {
         fileIntegration.saveFile(document.uuid(), documentCreateModel.file());
         TransactionRollbackHelper.registerRollbackFunction(() -> fileIntegration.deleteFile(document.uuid()));
 
-        rabbitTemplate.convertAndSend(RabbitMQConfig.OCR_QUEUE, document.uuid().toString());
+        rabbitTemplate.convertAndSend(RabbitMQConfig.TRIGGER_OCR_QUEUE, document.uuid().toString());
         log.info("Sent OCR processing message to RabbitMQ for document creation uuid: {}", document.uuid());
 
         return document;
@@ -92,7 +97,9 @@ public class DocumentService {
 
         fileIntegration.saveFile(documentUpdateFileModel.uuid(), documentUpdateFileModel.file());
 
-        rabbitTemplate.convertAndSend(RabbitMQConfig.OCR_QUEUE, documentUpdateFileModel.uuid().toString());
+        documentRepoService.updateDocument(new DocumentUpdateStatusModel(documentUpdateFileModel.uuid(), DocumentStatus.CONTENT_CHANGED));
+
+        rabbitTemplate.convertAndSend(RabbitMQConfig.TRIGGER_OCR_QUEUE, documentUpdateFileModel.uuid().toString());
         log.info("Sent OCR processing message to RabbitMQ for document update uuid: {}", documentUpdateFileModel.uuid());
 
         return documentRepoService.getDocumentById(documentUpdateFileModel.uuid());
