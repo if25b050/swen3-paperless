@@ -1,6 +1,7 @@
 package at.fh.technikum.paperless_common.business.properties;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -20,4 +21,6 @@ public class ElasticsearchProperties {
     private String username;
     @NotBlank
     private String password;
+    @NotNull
+    private Boolean testOnStartup;
 }
