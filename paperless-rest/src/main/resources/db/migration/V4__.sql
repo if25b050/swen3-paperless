@@ -13,6 +13,10 @@ ALTER TABLE documents
 ALTER TABLE documents_labels
     ADD CONSTRAINT pk_documents_labels PRIMARY KEY (documents_uuid, labels_uuid);
 
+UPDATE documents
+SET created_date = now()
+WHERE created_date IS NULL;
+
 ALTER TABLE documents
     ALTER COLUMN created_date SET NOT NULL;
 

@@ -31,6 +31,8 @@ dependencies {
     testAnnotationProcessor("org.projectlombok:lombok")
     implementation("software.amazon.awssdk:s3:2.55.11")
     implementation(project(":paperless-common"))
+    // Source: https://mvnrepository.com/artifact/org.ghost4j/ghost4j
+    implementation("org.ghost4j:ghost4j:1.0.0")
 }
 
 tasks.withType<Test> {
