@@ -30,6 +30,6 @@ EXPOSE 8080
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD java -jar app.jar --version 2>/dev/null || exit 1
+    CMD wget -qO- http://localhost:8080/actuator/health >/dev/null || exit 1
 
 ENTRYPOINT ["java", "-jar", "app.jar"]

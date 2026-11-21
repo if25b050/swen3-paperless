@@ -22,6 +22,15 @@ FROM eclipse-temurin:25-jre
 
 WORKDIR /app
 
+# install ghostscript, tesseract, and language packs (deu,eng,rus)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ghostscript \
+    tesseract-ocr \
+    tesseract-ocr-deu \
+    tesseract-ocr-eng \
+    tesseract-ocr-rus \
+  && rm -rf /var/lib/apt/lists*
+
 # Copy the JAR from builder
 COPY --from=builder /app/paperless-ocr/build/libs/*.jar app.jar
 
