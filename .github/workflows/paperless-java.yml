@@ -34,6 +34,10 @@ jobs:
     # See: https://github.com/gradle/actions/blob/main/setup-gradle/README.md
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
+    - name: Install Tesseract OCR
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y tesseract-ocr tesseract-ocr-deu tesseract-ocr-eng tesseract-ocr-rus
     - name: Change Graldew Permission
       run: chmod +x ./gradlew
     - name: Build with Gradle Wrapper
