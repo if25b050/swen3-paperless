@@ -74,6 +74,7 @@ class PdfOcrIntegrationTest {
 
         // Then
         assertValidImages(images);
+        System.out.println(recognizedText + " -> " + expectedTerms);
         assertExpectedTermsPresent(recognizedText, expectedTerms, "doc04");
     }
 
@@ -134,6 +135,9 @@ class PdfOcrIntegrationTest {
                 .filter(term -> !normalizedText.contains(term))
                 .toList();
 
+
+        System.out.println("Missing: " + missingTerms);
+        System.out.println("Erkannt: " + normalizedText);
         assertTrue(missingTerms.isEmpty(), () ->
                 "Fehlende Begriffe in OCR für " + docName + ": " + missingTerms +
                         "\nErkannter Text: " + normalizedText
