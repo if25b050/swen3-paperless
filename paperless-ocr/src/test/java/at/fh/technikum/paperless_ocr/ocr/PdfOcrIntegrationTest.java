@@ -1,10 +1,6 @@
 package at.fh.technikum.paperless_ocr.ocr;
 
-import at.fh.technikum.paperless_ocr.business.ocr.GhostscriptPdfRenderer;
-import at.fh.technikum.paperless_ocr.business.ocr.PdfRenderer;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -16,102 +12,87 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class PdfOcrIntegrationTest {
-    private PdfRenderer pdfRenderer;
 
-    @BeforeEach
-    void setUp() {
-        this.pdfRenderer = new GhostscriptPdfRenderer();
-    }
+    private static final String IMAGE_DIR = "pdfs";
 
     @Test
-    void testDoc1PdfRenderingAndOcr(@TempDir Path tempDir) throws Exception {
+    void testDoc1Ocr() throws Exception {
         // Given
-        Path pdfPath = resolveResourcePath("pdfs/test_pdf01.pdf");
+        List<Path> images = resolveImagesForPrefix("doc01");
         List<String> expectedTerms = List.of("Tesseract", "Texterkennung", "einwandfrei");
-        assertTrue(Files.exists(pdfPath), "PDF nicht gefunden: " + pdfPath);
 
         // When
-        List<Path> images = renderPdfWithGhostscript(pdfPath, tempDir);
         String recognizedText = extractTextWithTesseract(images, "deu");
 
         // Then
         assertValidImages(images);
-        assertExpectedTermsPresent(recognizedText, expectedTerms, "test_pdf01.pdf");
+        assertExpectedTermsPresent(recognizedText, expectedTerms, "doc01");
     }
 
     @Test
-    void testDoc2PdfRenderingAndOcr(@TempDir Path tempDir) throws Exception {
+    void testDoc2Ocr() throws Exception {
         // Given
-        Path pdfPath = resolveResourcePath("pdfs/test_pdf02.pdf");
+        List<Path> images = resolveImagesForPrefix("doc02");
         List<String> expectedTerms = List.of("Rechnungsnummer", "45,99");
-        assertTrue(Files.exists(pdfPath), "PDF nicht gefunden: " + pdfPath);
 
         // When
-        List<Path> images = pdfRenderer.renderToPng(pdfPath, tempDir);
         String recognizedText = extractTextWithTesseract(images, "deu");
 
         // Then
         assertValidImages(images);
-        assertExpectedTermsPresent(recognizedText, expectedTerms, "test_pdf02.pdf");
+        assertExpectedTermsPresent(recognizedText, expectedTerms, "doc02");
     }
 
     @Test
-    void testDoc3PdfRenderingAndOcr(@TempDir Path tempDir) throws Exception {
+    void testDoc3PdfOcr() throws Exception {
         // Given
-        Path pdfPath = resolveResourcePath("pdfs/test_pdf03.pdf");
+        List<Path> images = resolveImagesForPrefix("doc03");
         List<String> expectedTerms = List.of("Zentrum", "Links unten", "Rechts oben");
-        assertTrue(Files.exists(pdfPath), "PDF nicht gefunden: " + pdfPath);
 
         // When
-        List<Path> images = renderPdfWithGhostscript(pdfPath, tempDir);
         String recognizedText = extractTextWithTesseract(images, "deu");
 
         // Then
         assertValidImages(images);
-        assertExpectedTermsPresent(recognizedText, expectedTerms, "test_pdf03.pdf");
+        assertExpectedTermsPresent(recognizedText, expectedTerms, "doc03");
     }
 
     @Test
-    void testDoc4PdfRenderingAndOcr(@TempDir Path tempDir) throws Exception {
+    void testDoc4PdfOcr() throws Exception {
         // Given
-        Path pdfPath = resolveResourcePath("pdfs/test_pdf04.pdf");
+        List<Path> images = resolveImagesForPrefix("doc04");
         List<String> expectedTerms = List.of("Äpfel", "Schriftartentest");
-        assertTrue(Files.exists(pdfPath), "PDF nicht gefunden: " + pdfPath);
 
         // When
-        List<Path> images = renderPdfWithGhostscript(pdfPath, tempDir);
         String recognizedText = extractTextWithTesseract(images, "deu");
 
         // Then
         assertValidImages(images);
-        assertExpectedTermsPresent(recognizedText, expectedTerms, "test_pdf04.pdf");
+        assertExpectedTermsPresent(recognizedText, expectedTerms, "doc04");
     }
 
     @Test
-    void testDoc5PdfRenderingAndOcr(@TempDir Path tempDir) throws Exception {
+    void testDoc5PdfOcr() throws Exception {
         // Given
-        Path pdfPath = resolveResourcePath("pdfs/test_pdf05.pdf");
+        List<Path> images = resolveImagesForPrefix("doc05");
         List<String> expectedTerms = List.of("вечер", "программист");
-        assertTrue(Files.exists(pdfPath), "PDF nicht gefunden: " + pdfPath);
 
         // When
-        List<Path> images = renderPdfWithGhostscript(pdfPath, tempDir);
         String recognizedText = extractTextWithTesseract(images, "rus");
 
         // Then
         assertValidImages(images);
-        assertExpectedTermsPresent(recognizedText, expectedTerms, "test_pdf05.pdf");
+        assertExpectedTermsPresent(recognizedText, expectedTerms, "doc05");
     }
 
     private void assertValidImages(List<Path> images) throws IOException {
-        assertFalse(images.isEmpty(), "Keine Bilder durch Ghostscript erzeugt");
+        assertFalse(images.isEmpty(), "Keine Bilder vorhanden.");
         for (Path imagePath : images) {
             assertTrue(Files.size(imagePath) > 1024, "Bilddatei zu klein/leer: " + imagePath);
             BufferedImage image = ImageIO.read(imagePath.toFile());
@@ -149,34 +130,6 @@ class PdfOcrIntegrationTest {
         return combinedText.toString();
     }
 
-    private List<Path> renderPdfWithGhostscript(Path pdfPath, Path outDir) throws IOException, InterruptedException {
-        Path outPattern = outDir.resolve("page-%03d.png");
-        String gsBinary = resolveGhostscriptBinary();
-
-        ProcessBuilder pb = new ProcessBuilder(
-                gsBinary,
-                "-dSAFER",
-                "-dBATCH",
-                "-dNOPAUSE",
-                "-sDEVICE=png16m",
-                "-r300",
-                "-sOutputFile=" + outPattern,
-                pdfPath.toAbsolutePath().toString()
-        );
-        pb.redirectErrorStream(true);
-
-        Process process = pb.start();
-        String output = new String(process.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
-        assertTrue(process.waitFor(60, TimeUnit.SECONDS), "Ghostscript-Timeout");
-        assertEquals(0, process.exitValue(), "Ghostscript fehlgeschlagen (" + gsBinary + "):\n" + output);
-
-        try (Stream<Path> files = Files.list(outDir)) {
-            return files
-                    .filter(p -> p.getFileName().toString().startsWith("page-") && p.getFileName().toString().endsWith(".png"))
-                    .sorted(Comparator.comparing(p -> p.getFileName().toString()))
-                    .toList();
-        }
-    }
 
     private String runTesseractOnImage(Path imagePath, String language) throws IOException, InterruptedException {
         String tesseractBinary = resolveTesseractBinary();
@@ -198,35 +151,6 @@ class PdfOcrIntegrationTest {
         return output;
     }
 
-    private String resolveGhostscriptBinary() {
-        String configured = System.getProperty("gs.command");
-        if (configured != null && !configured.isBlank()) {
-            return configured;
-        }
-
-        // Sucht automatisch unter C:\Program Files\gs\gs*\bin\gswin64c.exe oder gswin32c.exe
-        Path gsRoot = Path.of("C:\\Program Files\\gs");
-        if (Files.isDirectory(gsRoot)) {
-            try (Stream<Path> walk = Files.walk(gsRoot, 3)) {
-                Optional<Path> found = walk
-                        .filter(Files::isRegularFile)
-                        .filter(p -> {
-                            String name = p.getFileName().toString().toLowerCase();
-                            return name.equals("gswin64c.exe") || name.equals("gswin32c.exe");
-                        })
-                        .sorted(Comparator.reverseOrder())
-                        .findFirst();
-                if (found.isPresent()) {
-                    return found.get().toString();
-                }
-            } catch (IOException ignored) {
-                // Fallback auf PATH unten
-            }
-        }
-
-        return "gs";
-    }
-
     private String resolveTesseractBinary() {
         String configured = System.getProperty("tesseract.command");
         if (configured != null && !configured.isBlank()) {
@@ -246,9 +170,23 @@ class PdfOcrIntegrationTest {
         return "tesseract";
     }
 
-    private Path resolveResourcePath(String resourcePath) throws URISyntaxException {
-        URL url = getClass().getClassLoader().getResource(resourcePath);
-        assertNotNull(url, "Ressource nicht gefunden: " + resourcePath);
-        return Path.of(url.toURI());
+    private List<Path> resolveImagesForPrefix(String prefix) throws URISyntaxException, IOException {
+        URL dirUrl = getClass().getClassLoader().getResource(IMAGE_DIR);
+        assertNotNull(dirUrl, "Image dir nicht gefunden: " + IMAGE_DIR);
+        Path dirPath = Path.of(dirUrl.toURI());
+
+        try(Stream<Path> files = Files.list(dirPath)) {
+            List<Path> matches = files
+                    .filter(Files::isRegularFile)
+                    .filter(p -> {
+                        String name = p.getFileName().toString().toLowerCase();
+                        return name.startsWith(prefix.toLowerCase()+"-") && name.endsWith(".png");
+                    })
+                    .sorted(Comparator.comparing(p -> p.getFileName().toString()))
+                    .toList();
+
+            assertFalse(matches.isEmpty(), "Keine PNG-Bilder gefunden für '" + prefix + "' in " + dirPath);
+            return matches;
+        }
     }
 }
