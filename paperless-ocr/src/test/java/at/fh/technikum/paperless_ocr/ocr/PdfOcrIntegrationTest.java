@@ -64,10 +64,10 @@ class PdfOcrIntegrationTest {
     }
 
     @Test
-    void testDoc4PdfOcr() throws Exception {
+    void testDoc4PdfOcrReadable() throws Exception {
         // Given
         List<Path> images = resolveImagesForPrefix("doc04");
-        List<String> expectedTerms = List.of("Äpfel", "Schriftartentest");
+        List<String> expectedTerms = List.of("Äpfel", "0123456789");
 
         // When
         String recognizedText = extractTextWithTesseract(images, "deu");
@@ -75,6 +75,24 @@ class PdfOcrIntegrationTest {
         // Then
         assertValidImages(images);
         assertExpectedTermsPresent(recognizedText, expectedTerms, "doc04");
+    }
+
+    @Test
+    void testDoc4PdfOcrUnreadable() throws Exception {
+        // Given
+        List<Path> images = resolveImagesForPrefix("doc04");
+        String unreadableTerm = "schriftartentest";
+
+        // When
+        String recognizedText = extractTextWithTesseract(images, "deu");
+        String normalizedText = recognizedText.toLowerCase().replaceAll("\\s+", " ").trim();
+
+        // Then
+        assertValidImages(images);
+        assertFalse(
+                normalizedText.contains(unreadableTerm),
+                "Begriff in Zierschrift sollte nicht erkannt werden, tauchte aber auf in: " + normalizedText
+        );
     }
 
     @Test
