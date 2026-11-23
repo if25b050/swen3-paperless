@@ -67,7 +67,7 @@ class PdfOcrIntegrationTest {
     void testDoc4PdfOcrReadable() throws Exception {
         // Given
         List<Path> images = resolveImagesForPrefix("doc04");
-        List<String> expectedTerms = List.of("Äpfel", "0123456789");
+        List<String> expectedTerms = List.of("Äpfel", "Frühling", "Öfen");
 
         // When
         String recognizedText = extractTextWithTesseract(images, "deu");
