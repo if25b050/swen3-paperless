@@ -42,6 +42,15 @@ jobs:
       run: chmod +x ./gradlew
     - name: Build with Gradle Wrapper
       run: ./gradlew build
+    - name: Upload Gradle test reports
+      if: ${{ !cancelled() }}
+      uses: actions/upload-artifact@v4
+      with:
+        name: paperless-ocr-test-report
+        path: |
+          paperless-ocr/build/reports/tests/test/
+          paperless-ocr/build/test-results/test/
+        retention-days: 7
 
     # NOTE: The Gradle Wrapper is the default and recommended way to run Gradle (https://docs.gradle.org/current/userguide/gradle_wrapper.html).
     # If your project does not have the Gradle Wrapper configured, you can use the following configuration to run Gradle with a specified version.
