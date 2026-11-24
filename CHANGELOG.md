@@ -4,6 +4,27 @@ All notable changes to this project will be documented in this file.
 
 The format is based on "Keep a Changelog" and follows Semantic Versioning.
 
+## [v0.4.0-alpha] - 2026-11-24 (prerelease)
+### Added / Changed
+- Add audited entities (PR #93) — @if25b050
+- Fix document deselection handling (PR #94) — @if25b050
+- Disable label filtering without an associated document (PR #95) — @if25b050
+- Add DTO validation (PR #96) — @if25b050
+- Move configuration to local `.env` files (PR #97) — @if25b050
+- Add label-management dialog and fix label entity deletion (PR #98) — @if25b050
+- Improve transaction rollback handling and frontend error messages (PR #100) — @if25b050
+- Fix Gradle copying and build downloads (PR #102) — @if25b050
+- Set up ELK with Docker (PR #104) — @if25b050
+- Integrate ELK into the backend and common modules (PR #105) — @if25b050
+- Add Ghostscript and Tesseract OCR support with integration tests (PR #106) — @Manfred190203
+- Apply small ELK fixes (PR #107) — @if25b050
+- Rewrite tests (PR #108) — @Manfred190203
+
+Full release notes: https://github.com/if25b050/swen3-paperless/releases/tag/v0.4.0-alpha  
+Full changelog (compare): https://github.com/if25b050/swen3-paperless/compare/v0.3.0-alpha...v0.4.0-alpha
+
+---
+
 ## [v0.3.0-alpha] - 2026-11-03 (prerelease)
 ### Added / Changed
 - Change Gradle Version (PR #79) — @if25b050
