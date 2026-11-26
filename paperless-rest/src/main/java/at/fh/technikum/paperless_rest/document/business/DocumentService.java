@@ -1,8 +1,8 @@
 package at.fh.technikum.paperless_rest.document.business;
 
 import at.fh.technikum.paperless_common.business.exception.S3ObjectNotFoundException;
-import at.fh.technikum.paperless_common.business.integration.FileIntegration;
-import at.fh.technikum.paperless_common.business.integration.RabbitMQConfig;
+import at.fh.technikum.paperless_common.business.integration.file.FileIntegration;
+import at.fh.technikum.paperless_common.business.integration.mqueue.RabbitMQConfig;
 import at.fh.technikum.paperless_common.business.integration.search.SearchIntegration;
 import at.fh.technikum.paperless_rest.common.dal.TransactionRollbackHelper;
 import at.fh.technikum.paperless_rest.common.exception.DALObjectNotFoundException;

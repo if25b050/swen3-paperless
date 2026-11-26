@@ -8,10 +8,12 @@
           <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.projectlombok/lombok/1.18.46/a5cfe99fdf320e84955ef653f2ce1bf789d11385/lombok-1.18.46.jar" />
         </processorPath>
         <module name="swen3-paperless.paperless-ocr.test" />
-        <module name="swen3-paperless.paperless-common.main" />
+        <module name="swen3-paperless.paperless-gen-ai.test" />
         <module name="swen3-paperless.paperless-rest.test" />
-        <module name="swen3-paperless.paperless-common.test" />
+        <module name="swen3-paperless.paperless-gen-ai.main" />
         <module name="swen3-paperless.paperless-ocr.main" />
+        <module name="swen3-paperless.paperless-common.main" />
+        <module name="swen3-paperless.paperless-common.test" />
       </profile>
       <profile name="Gradle Imported" enabled="true">
         <outputRelativeToContentRoot value="true" />
@@ -39,6 +41,9 @@
       <module name="paperless-rest" options="-parameters" />
       <module name="paperless-rest.main" options="-parameters" />
       <module name="paperless-rest.test" options="-parameters" />
+      <module name="swen3-paperless.paperless-gen-ai" options="-parameters" />
+      <module name="swen3-paperless.paperless-gen-ai.main" options="-parameters" />
+      <module name="swen3-paperless.paperless-gen-ai.test" options="-parameters" />
       <module name="swen3-paperless.paperless-ocr" options="-parameters" />
       <module name="swen3-paperless.paperless-ocr.main" options="-parameters" />
       <module name="swen3-paperless.paperless-ocr.test" options="-parameters" />

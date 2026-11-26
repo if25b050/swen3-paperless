@@ -1,6 +1,7 @@
 package at.fh.technikum.paperless_ocr.ocr;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 import org.junit.jupiter.api.io.TempDir;
 
 import javax.imageio.ImageIO;
@@ -23,6 +24,7 @@ class PdfOcrIntegrationTest {
 
     private static final String IMAGE_DIR = "pdfs";
 
+    @EnabledIfSystemProperty(named = "gs.command", matches = ".+", disabledReason = "Required Software missing.")
     @Test
     void testDoc1PdfRenderingAndOcr(@TempDir Path tempDir) throws Exception {
         // Given
@@ -39,6 +41,7 @@ class PdfOcrIntegrationTest {
         assertExpectedTermsPresent(recognizedText, expectedTerms, "test_pdf01.pdf");
     }
 
+    @EnabledIfSystemProperty(named = "gs.command", matches = ".+", disabledReason = "Required Software missing.")
     @Test
     void testDoc2PdfRenderingAndOcr(@TempDir Path tempDir) throws Exception {
         // Given
@@ -55,6 +58,7 @@ class PdfOcrIntegrationTest {
         assertExpectedTermsPresent(recognizedText, expectedTerms, "test_pdf02.pdf");
     }
 
+    @EnabledIfSystemProperty(named = "gs.command", matches = ".+", disabledReason = "Required Software missing.")
     @Test
     void testDoc3PdfOcr() throws Exception {
         // Given
@@ -69,6 +73,7 @@ class PdfOcrIntegrationTest {
         assertExpectedTermsPresent(recognizedText, expectedTerms, "doc03");
     }
 
+    @EnabledIfSystemProperty(named = "gs.command", matches = ".+", disabledReason = "Required Software missing.")
     @Test
     void testDoc4PdfOcrReadable() throws Exception {
         // Given
@@ -84,6 +89,7 @@ class PdfOcrIntegrationTest {
         assertExpectedTermsPresent(recognizedText, expectedTerms, "doc04");
     }
 
+    @EnabledIfSystemProperty(named = "gs.command", matches = ".+", disabledReason = "Required Software missing.")
     @Test
     void testDoc4PdfOcrUnreadable() throws Exception {
         // Given
@@ -102,6 +108,7 @@ class PdfOcrIntegrationTest {
         );
     }
 
+    @EnabledIfSystemProperty(named = "gs.command", matches = ".+", disabledReason = "Required Software missing.")
     @Test
     void testDoc5PdfOcr() throws Exception {
         // Given
@@ -268,9 +275,7 @@ class PdfOcrIntegrationTest {
                         .filter(p -> {
                             String name = p.getFileName().toString().toLowerCase();
                             return name.equals("gswin64c.exe") || name.equals("gswin32c.exe");
-                        })
-                        .sorted(Comparator.reverseOrder())
-                        .findFirst();
+                        }).max(Comparator.naturalOrder());
                 if (found.isPresent()) {
                     return found.get().toString();
                 }

@@ -1,9 +1,10 @@
-package at.fh.technikum.paperless_common.business.integration;
+package at.fh.technikum.paperless_common.business.integration.file;
 
 import at.fh.technikum.paperless_common.business.exception.S3ObjectNotFoundException;
 import at.fh.technikum.paperless_common.business.properties.S3Properties;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
@@ -23,6 +24,7 @@ import static at.fh.technikum.paperless_common.business.BusinessUtil.kv;
 
 
 @Service
+@Lazy
 @Slf4j
 @EnableConfigurationProperties(S3Properties.class)
 public class FileIntegrationImpl implements FileIntegration {

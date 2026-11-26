@@ -1,6 +1,6 @@
 package at.fh.technikum.paperless_rest;
 
-import at.fh.technikum.paperless_common.business.integration.FileIntegration;
+import at.fh.technikum.paperless_common.business.integration.file.FileIntegration;
 import at.fh.technikum.paperless_common.business.integration.search.SearchIntegration;
 import at.fh.technikum.paperless_rest.document.api.dto.request.DocumentUpdateRequest;
 import at.fh.technikum.paperless_rest.document.api.dto.response.DocumentResponse;

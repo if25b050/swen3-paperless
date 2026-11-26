@@ -11,6 +11,7 @@ COPY paperless-ocr/ ./paperless-ocr/
 # Add empty Project-Folders so the build does not fail
 RUN mkdir "paperless-frontend"
 RUN mkdir "paperless-rest"
+RUN mkdir "paperless-gen-ai"
 
 RUN sed -i 's/\r$//' gradlew && chmod +x gradlew
 
