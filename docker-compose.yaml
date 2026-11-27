@@ -77,6 +77,29 @@ services:
     volumes:
       - ./agent/opentelemetry-javaagent.jar:/app/opentelemetry-javaagent.jar
 
+  gen-ai:
+    restart: unless-stopped
+    depends_on:
+      - rabbitmq
+      - otel-collector
+    profiles:
+      - backend
+      - full
+    build:
+      dockerfile: gen-ai.Dockerfile
+    env_file:
+      - paperless-common/.env
+    environment:
+      JAVA_TOOL_OPTIONS: "-javaagent:/app/opentelemetry-javaagent.jar"
+      ELASTIC_URL: "http://elasticsearch:9200"
+      OTEL_SERVICE_NAME: "paperless-gen-ai"
+      OTEL_EXPORTER_OTLP_ENDPOINT: "http://otel-collector:4318"
+      OTEL_METRICS_EXPORTER: "otlp"
+      OTEL_LOGS_EXPORTER: "otlp"
+      OTEL_TRACES_EXPORTER: "otlp"
+    volumes:
+      - ./agent/opentelemetry-javaagent.jar:/app/opentelemetry-javaagent.jar
+
   frontend:
     restart: unless-stopped
     profiles:

@@ -76,6 +76,7 @@ public class DocumentRepoService {
                 .orElseThrow(() -> new DALObjectNotFoundException("Document with uuid: " + documentUpdateAiSummaryModel.uuid() + " not found."));
 
         documentEntity.setAiSummary(documentUpdateAiSummaryModel.aiSummary());
+        documentEntity.setStatus(DocumentStatus.GEN_AI_FINISHED);
 
         documentEntity = documentRepository.save(documentEntity);
 

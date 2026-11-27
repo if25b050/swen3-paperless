@@ -1,4 +1,4 @@
-package at.fh.technikum.paperless_common.business.integration;
+package at.fh.technikum.paperless_common.business.integration.file;
 
 import java.io.OutputStream;
 import java.util.UUID;

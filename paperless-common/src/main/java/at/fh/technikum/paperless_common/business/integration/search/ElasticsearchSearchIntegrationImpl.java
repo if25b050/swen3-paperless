@@ -11,6 +11,7 @@ import co.elastic.clients.elasticsearch.core.SearchResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -21,6 +22,7 @@ import java.util.UUID;
 import static at.fh.technikum.paperless_common.business.BusinessUtil.kv;
 
 @Service
+@Lazy
 @Slf4j
 @EnableConfigurationProperties(ElasticsearchProperties.class)
 public class ElasticsearchSearchIntegrationImpl implements SearchIntegration {

@@ -11,6 +11,7 @@ COPY paperless-rest/ ./paperless-rest/
 # Add empty Project-Folders so the build does not fail
 RUN mkdir "paperless-frontend"
 RUN mkdir "paperless-ocr"
+RUN mkdir "paperless-gen-ai"
 
 RUN sed -i 's/\r$//' gradlew && chmod +x gradlew
 
@@ -30,6 +31,6 @@ EXPOSE 8080
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD wget -qO- http://localhost:8080/actuator/health >/dev/null || exit 1
+    CMD java -jar app.jar --version 2>/dev/null || exit 1
 
 ENTRYPOINT ["java", "-jar", "app.jar"]

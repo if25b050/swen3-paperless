@@ -2,3 +2,4 @@ rootProject.name = "swen3-paperless"
 include("paperless-common")
 include("paperless-rest")
 include("paperless-ocr")
+include("paperless-gen-ai")
